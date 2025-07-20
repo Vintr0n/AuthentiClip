@@ -42,10 +42,11 @@ async def upload_video(
     finally:
         os.remove(file_path)  # Clean up temp file
 
-    # Store hashes in DB
+    # Store scene hashes in DB
     for hash_val in scene_hashes:
-        db.add(VideoHash(user_id=user.id, hash=hash_val))
+        db.add(VideoHash(user_id=user.id, scene_hash=hash_val))
     db.commit()
+
 
     return {
         "message": "Video uploaded and hashed",
