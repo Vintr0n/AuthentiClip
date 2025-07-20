@@ -10,12 +10,6 @@ from app.crypto_utils import generate_key_pair
 router = APIRouter()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
