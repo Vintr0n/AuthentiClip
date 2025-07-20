@@ -1,72 +1,48 @@
-from fastapi import APIRouter, UploadFile, File, Form, Depends
+# app/video.py
+
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
 from sqlalchemy.orm import Session
-from app.database import SessionLocal
-from app.crypto_utils import sign_hashes, verify_signature
-from app.hash_utils import extract_hashes
-from app.models import User, SignedVideo
-import json
+from app.database import get_db
+from app.models import User, VideoHash
+from app.hash_utils import generate_video_hashes
+
+import shutil
+import os
+import uuid
 
 router = APIRouter()
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+UPLOAD_DIR = "uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-@router.post("/sign")
-async def sign_video(username: str = Form(...), video: UploadFile = File(...), db: Session = Depends(get_db)):
+@router.post("/upload")
+async def upload_video(
+    username: str = Form(...),
+    video_file: UploadFile = File(...),
+    db: Session = Depends(get_db)
+):
+    # Find the user
     user = db.query(User).filter(User.username == username).first()
     if not user:
-        return {"error": "User not found"}
+        raise HTTPException(status_code=404, detail="User not found")
 
-    # Save uploaded file to disk
-    temp_path = f"/tmp/{video.filename}"
-    with open(temp_path, "wb") as f:
-        f.write(await video.read())
+    # Save the uploaded video
+    video_id = str(uuid.uuid4())
+    video_path = os.path.join(UPLOAD_DIR, f"{video_id}_{video_file.filename}")
 
-    # Extract hashes
-    hashes = extract_hashes(temp_path)
+    with open(video_path, "wb") as buffer:
+        shutil.copyfileobj(video_file.file, buffer)
 
-    # Sign hashes
-    signature = sign_hashes(hashes, user.private_key)
+    # Generate scene hashes
+    try:
+        scene_hashes = generate_video_hashes(video_path)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Hashing failed: {e}")
 
-    # Save signed video metadata
-    record = SignedVideo(
-        filename=video.filename,
-        user_id=user.id,
-        signature=signature,
-        perceptual_hashes=json.dumps(hashes),
-    )
-    db.add(record)
+    # Store hashes in DB
+    for h in scene_hashes:
+        db.add(VideoHash(user_id=user.id, scene_hash=h))
+
     db.commit()
 
-    return {"message": "Video signed successfully", "video_id": record.id}
-
-@router.post("/verify")
-async def verify_video(username: str = Form(...), video: UploadFile = File(...), db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.username == username).first()
-    if not user:
-        return {"error": "User not found"}
-
-    original_videos = db.query(SignedVideo).filter(SignedVideo.user_id == user.id).all()
-
-    temp_path = f"/tmp/{video.filename}"
-    with open(temp_path, "wb") as f:
-        f.write(await video.read())
-
-    input_hashes = extract_hashes(temp_path)
-
-    for vid in original_videos:
-        stored_hashes = json.loads(vid.perceptual_hashes)
-        is_valid, match_ratio = verify_signature(input_hashes, stored_hashes, vid.signature, user.public_key)
-        if is_valid:
-            return {
-                "verified": True,
-                "match_percent": match_ratio,
-                "video_id": vid.id,
-                "filename": vid.filename,
-            }
-
-    return {"verified": False, "match_percent": 0.0}
+    return {"message": "Video uploaded and hashed", "scene_hashes_count": len(scene_hashes)}

@@ -1,3 +1,5 @@
+# app/main.py
+
 from fastapi import FastAPI
 from app.auth import router as auth_router
 from app.video import router as video_router

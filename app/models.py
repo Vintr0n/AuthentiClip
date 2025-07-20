@@ -23,3 +23,12 @@ class SignedVideo(Base):
     user = relationship("User", back_populates="videos")
 
 User.videos = relationship("SignedVideo", back_populates="user")
+
+class VideoHash(Base):
+    __tablename__ = "video_hashes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    scene_hash = Column(String, nullable=False)
+
+User.hashes = relationship("VideoHash", backref="user")
