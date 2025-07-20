@@ -77,7 +77,8 @@ async def verify_video(
 
     # Retrieve stored hashes for this user
     stored_hashes = db.query(VideoHash).filter(VideoHash.user_id == user.id).all()
-    stored_hash_set = {vh.hash for vh in stored_hashes}
+    stored_hash_set = {vh.scene_hash for vh in stored_hashes}
+
 
     # Compare and calculate match
     matches = uploaded_hash_set.intersection(stored_hash_set)
