@@ -24,7 +24,7 @@ def signup(user_data: UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Username already registered")
 
     hashed_password = pwd_context.hash(user_data.password)
-	private_key, public_key = generate_key_pair()
+    private_key, public_key = generate_key_pair()
 
     new_user = User(
         username=user_data.username,
