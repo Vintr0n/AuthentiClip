@@ -89,5 +89,5 @@ async def verify_video(
         "match_count": len(matches),
         "total_uploaded_hashes": len(uploaded_hashes),
         "match_percentage": round(match_percentage * 100, 2),
-        "verified": match_percentage >= 80  # 80% match threshold
+        "verified": match_percentage >= 0.8  # 80% match threshold
     }
