@@ -6,3 +6,4 @@ cryptography
 imagehash
 opencv-python-headless
 pillow
+python-multipart
