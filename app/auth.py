@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.models import User
-from app.crypto_utils import generate_rsa_key_pair
+from app.crypto_utils import generate_key_pair
 from app.database import get_db
 from passlib.context import CryptContext
 from pydantic import BaseModel
@@ -24,7 +24,7 @@ def signup(user_data: UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Username already registered")
 
     hashed_password = pwd_context.hash(user_data.password)
-    public_key, private_key = generate_rsa_key_pair()
+	private_key, public_key = generate_key_pair()
 
     new_user = User(
         username=user_data.username,
