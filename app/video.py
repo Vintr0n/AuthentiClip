@@ -4,23 +4,13 @@ from app.models import User, VideoHash
 from app.database import get_db
 from app.hash_utils import generate_video_hashes
 
-import shutil
 import os
+import shutil
 import uuid
 
 router = APIRouter()
-
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
-
-
-def save_uploaded_file(uploaded_file: UploadFile) -> str:
-    """Save uploaded file to disk and return the path."""
-    video_id = str(uuid.uuid4())
-    file_path = os.path.join(UPLOAD_DIR, f"{video_id}_{uploaded_file.filename}")
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(uploaded_file.file, buffer)
-    return file_path
 
 
 @router.post("/upload")
@@ -29,24 +19,27 @@ async def upload_video(
     video_file: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
+    # Check user
     user = db.query(User).filter(User.username == username).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # Save file and generate hashes
-    file_path = save_uploaded_file(video_file)
+    # Save video locally
+    video_id = str(uuid.uuid4())
+    video_path = os.path.join(UPLOAD_DIR, f"{video_id}_{video_file.filename}")
+    with open(video_path, "wb") as buffer:
+        shutil.copyfileobj(video_file.file, buffer)
+
+    # Generate hashes
     try:
-        scene_hashes = generate_video_hashes(file_path)
+        scene_hashes = generate_video_hashes(video_path)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Hashing failed: {e}")
-    finally:
-        os.remove(file_path)  # Clean up temp file
 
-    # Store scene hashes in DB
-    for hash_val in scene_hashes:
-        db.add(VideoHash(user_id=user.id, scene_hash=hash_val))
+    # Save hashes
+    for h in scene_hashes:
+        db.add(VideoHash(user_id=user.id, scene_hash=h))
     db.commit()
-
 
     return {
         "message": "Video uploaded and hashed",
@@ -60,34 +53,36 @@ async def verify_video(
     video_file: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
+    # Check user
     user = db.query(User).filter(User.username == username).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # Save file and generate hashes
-    file_path = save_uploaded_file(video_file)
+    # Save temp file
+    video_id = str(uuid.uuid4())
+    temp_path = os.path.join(UPLOAD_DIR, f"verify_{video_id}_{video_file.filename}")
+    with open(temp_path, "wb") as buffer:
+        shutil.copyfileobj(video_file.file, buffer)
+
+    # Generate hashes
     try:
-        uploaded_hashes = generate_video_hashes(file_path)
+        uploaded_hashes = generate_video_hashes(temp_path)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Verification failed: {e}")
-    finally:
-        os.remove(file_path)  # Clean up temp file
 
-    uploaded_hash_set = set(uploaded_hashes)
-
-    # Retrieve stored hashes for this user
+    # Get stored hashes
     stored_hashes = db.query(VideoHash).filter(VideoHash.user_id == user.id).all()
     stored_hash_set = {vh.scene_hash for vh in stored_hashes}
+    uploaded_hash_set = set(uploaded_hashes)
 
-
-    # Compare and calculate match
+    # Compare
     matches = uploaded_hash_set.intersection(stored_hash_set)
-    match_percentage = len(matches) / max(len(uploaded_hashes), 1)
+    match_percentage = len(matches) / max(len(uploaded_hashes), 1) * 100
 
     return {
         "username": username,
         "match_count": len(matches),
         "total_uploaded_hashes": len(uploaded_hashes),
-        "match_percentage": round(match_percentage * 100, 2),
-        "verified": match_percentage >= 0.8  # 80% match threshold
+        "match_percentage": round(match_percentage, 2),
+        "verified": match_percentage >= 0.8  
     }
