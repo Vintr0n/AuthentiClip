@@ -1,62 +1,47 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Form
 from sqlalchemy.orm import Session
+from app.database import get_db
 from app.models import User
 from app.crypto_utils import generate_key_pair
-from app.database import get_db
-from passlib.context import CryptContext
 from pydantic import BaseModel
+import base64
 
 router = APIRouter()
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-class UserCreate(BaseModel):
+class SignupResponse(BaseModel):
+    id: int
     username: str
-    password: str
+    public_key: str
 
-class UserLogin(BaseModel):
-    username: str
-    password: str
+@router.post("/signup", response_model=SignupResponse)
+def signup(
+    username: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    existing_user = db.query(User).filter(User.username == username).first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Username already exists")
 
-@router.post("/signup")
-def signup(user_data: UserCreate, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.username == user_data.username).first()
-    if user:
-        raise HTTPException(status_code=400, detail="Username already registered")
-
-    hashed_password = pwd_context.hash(user_data.password)
     private_key, public_key = generate_key_pair()
-
-    new_user = User(
-        username=user_data.username,
-        hashed_password=hashed_password,
-        public_key=public_key,
-        private_key=private_key
-    )
-    db.add(new_user)
+    user = User(username=username, private_key=private_key, public_key=public_key)
+    db.add(user)
     db.commit()
-    db.refresh(new_user)
+    db.refresh(user)
 
-    return {
-        "username": new_user.username,
-        "public_key": new_user.public_key
-    }
-
-@router.post("/login")
-def login(user_data: UserLogin, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.username == user_data.username).first()
-    if not user or not pwd_context.verify(user_data.password, user.hashed_password):
-        raise HTTPException(status_code=400, detail="Invalid username or password")
-    return {
-        "username": user.username,
-        "public_key": user.public_key
-    }
+    return SignupResponse(
+        id=user.id,
+        username=user.username,
+        public_key=base64.b64encode(user.public_key).decode("utf-8")
+    )
 
 @router.get("/username/{username}")
-def get_public_key(username: str, db: Session = Depends(get_db)):
+def get_user(username: str, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.username == username).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
+
     return {
+        "id": user.id,
         "username": user.username,
-        "public_key": user.public_key
+        "public_key": base64.b64encode(user.public_key).decode("utf-8") if user.public_key else None
     }

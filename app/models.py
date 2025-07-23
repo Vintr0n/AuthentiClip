@@ -1,34 +1,25 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text
+from sqlalchemy import Column, Integer, LargeBinary, ForeignKey, String
 from sqlalchemy.orm import relationship
-from datetime import datetime
-from .database import Base
+from app.database import Base
 
 class User(Base):
-    __tablename__ = 'users'
+    __tablename__ = "users"
+
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
     hashed_password = Column(String)
-    public_key = Column(Text)
-    private_key = Column(Text)
+    private_key = Column(LargeBinary, nullable=True)
+    public_key = Column(LargeBinary, nullable=True)
 
-class SignedVideo(Base):
-    __tablename__ = 'signed_videos'
-    id = Column(Integer, primary_key=True, index=True)
-    filename = Column(String)
-    user_id = Column(Integer, ForeignKey('users.id'))
-    signature = Column(Text)
-    perceptual_hashes = Column(Text)  # JSON-encoded list
-    created_at = Column(DateTime, default=datetime.utcnow)
+    video_hashes = relationship("VideoHash", back_populates="user")
 
-    user = relationship("User", back_populates="videos")
-
-User.videos = relationship("SignedVideo", back_populates="user")
 
 class VideoHash(Base):
     __tablename__ = "video_hashes"
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
-    scene_hash = Column(String, nullable=False)
+    scene_hash = Column(String, index=True)  # Keep as string for `phash`
+    signature = Column(LargeBinary)
 
-User.hashes = relationship("VideoHash", backref="user")
+    user = relationship("User", back_populates="video_hashes")
