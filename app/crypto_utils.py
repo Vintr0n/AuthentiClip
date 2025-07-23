@@ -1,4 +1,4 @@
-# Updated crypto_utils.py with salted SHA256 password hashing and verification
+# Updated crypto_utils.py with salted SHA256 password hashing and serialized Ed25519 keys
 import hashlib
 import os
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey, Ed25519PublicKey
@@ -24,7 +24,19 @@ def verify_password(password: str, hashed: str) -> bool:
 def generate_key_pair():
     private_key = Ed25519PrivateKey.generate()
     public_key = private_key.public_key()
-    return private_key, public_key
+
+    private_bytes = private_key.private_bytes(
+        encoding=serialization.Encoding.Raw,
+        format=serialization.PrivateFormat.Raw,
+        encryption_algorithm=serialization.NoEncryption()
+    )
+
+    public_bytes = public_key.public_bytes(
+        encoding=serialization.Encoding.Raw,
+        format=serialization.PublicFormat.Raw
+    )
+
+    return private_bytes, public_bytes
 
 def sign_data(private_key_bytes: bytes, data: bytes) -> bytes:
     private_key = Ed25519PrivateKey.from_private_bytes(private_key_bytes)
