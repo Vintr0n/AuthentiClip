@@ -1,31 +1,27 @@
-# Updated video.py to offload CPU-bound work and remove public_key_b64 from verify
+# Updated video.py to protect upload and verify endpoints with session auth
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
 from sqlalchemy.orm import Session
-from app.models import User, SignedBundle
+from app.models import SignedBundle, User
 from app.database import get_db
 from app.hash_utils import generate_video_hashes
 from app.crypto_utils import sign_data, verify_signature
+from app.auth import get_current_user
 from starlette.concurrency import run_in_threadpool
 
 import tempfile
 import os
 import json
 import hashlib
-import base64
 import time
 
 router = APIRouter()
 
 @router.post("/upload")
 async def upload_video(
-    username: str = Form(...),
+    current_user: User = Depends(get_current_user),
     video_file: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
-    user = db.query(User).filter(User.username == username).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-
     with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp:
         tmp.write(await video_file.read())
         tmp_path = tmp.name
@@ -34,7 +30,6 @@ async def upload_video(
         start = time.time()
         raw_hashes = await run_in_threadpool(generate_video_hashes, tmp_path, 1)
         duration = time.time() - start
-        print(f"Hashing took {duration:.2f} seconds")
     finally:
         os.remove(tmp_path)
 
@@ -47,11 +42,10 @@ async def upload_video(
     }
     payload_str = json.dumps(payload_dict)
     digest = hashlib.sha256(payload_str.encode("utf-8")).digest()
-
-    signature = await run_in_threadpool(sign_data, user.private_key, digest)
+    signature = await run_in_threadpool(sign_data, current_user.private_key, digest)
 
     db.add(SignedBundle(
-        user_id=user.id,
+        user_id=current_user.id,
         payload=payload_str,
         signature=signature
     ))
@@ -65,18 +59,14 @@ async def upload_video(
 
 @router.post("/verify")
 async def verify_video(
-    username: str = Form(...),
+    current_user: User = Depends(get_current_user),
     video_file: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
-    user = db.query(User).filter(User.username == username).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    if not user.public_key:
+    if not current_user.public_key:
         raise HTTPException(status_code=400, detail="User does not have a public key on file")
 
-    public_key_bytes = user.public_key
+    public_key_bytes = current_user.public_key
 
     with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp:
         tmp.write(await video_file.read())
@@ -87,7 +77,7 @@ async def verify_video(
     finally:
         os.remove(tmp_path)
 
-    bundle = db.query(SignedBundle).filter(SignedBundle.user_id == user.id).order_by(SignedBundle.id.desc()).first()
+    bundle = db.query(SignedBundle).filter(SignedBundle.user_id == current_user.id).order_by(SignedBundle.id.desc()).first()
     if not bundle:
         raise HTTPException(status_code=404, detail="No signed bundle found")
 
@@ -105,7 +95,7 @@ async def verify_video(
     match_percent = match_count / max(len(uploaded_hashes), 1)
 
     return {
-        "username": username,
+        "username": current_user.username,
         "match_count": match_count,
         "total_uploaded_hashes": len(uploaded_hashes),
         "match_percentage": round(match_percent * 100, 2),

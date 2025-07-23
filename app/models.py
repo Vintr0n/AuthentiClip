@@ -1,6 +1,9 @@
-from sqlalchemy import Column, Integer, LargeBinary, ForeignKey, String, Text
+# Updated models.py to add Session table for user authentication
+from sqlalchemy import Column, Integer, LargeBinary, ForeignKey, String, Text, DateTime
 from sqlalchemy.orm import relationship
 from app.database import Base
+from datetime import datetime, timedelta
+import uuid
 
 class User(Base):
     __tablename__ = "users"
@@ -12,14 +15,25 @@ class User(Base):
     public_key = Column(LargeBinary, nullable=True)
 
     bundles = relationship("SignedBundle", back_populates="user")
-
+    sessions = relationship("Session", back_populates="user")
 
 class SignedBundle(Base):
     __tablename__ = "signed_bundles"
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
-    payload = Column(Text)  # JSON string of frame hashes and metadata
-    signature = Column(LargeBinary)  # Ed25519 signature of the payload
+    payload = Column(Text)
+    signature = Column(LargeBinary)
 
     user = relationship("User", back_populates="bundles")
+
+class Session(Base):
+    __tablename__ = "sessions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    session_token = Column(String, unique=True, index=True, default=lambda: str(uuid.uuid4()))
+    created_at = Column(DateTime, default=datetime.utcnow)
+    expires_at = Column(DateTime, default=lambda: datetime.utcnow() + timedelta(days=7))
+
+    user = relationship("User", back_populates="sessions")
