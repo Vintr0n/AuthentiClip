@@ -32,8 +32,15 @@ def signup(
     user = User(
         username=username,
         hashed_password=hashed_pw,
-        private_key=private_key,
-        public_key=public_key
+        private_key=private_key.private_bytes(
+            encoding=serialization.Encoding.Raw,
+            format=serialization.PrivateFormat.Raw,
+            encryption_algorithm=serialization.NoEncryption()
+        ),
+        public_key=public_key.public_bytes(
+            encoding=serialization.Encoding.Raw,
+            format=serialization.PublicFormat.Raw
+        )
     )
     db.add(user)
     db.commit()
