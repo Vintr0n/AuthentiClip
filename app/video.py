@@ -1,4 +1,4 @@
-# Updated video.py for v5 with UTF-8 encoding per hash, then bundling
+# Updated video.py to explicitly set frame_interval=1 in both upload and verify
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
 from sqlalchemy.orm import Session
 from app.models import User, SignedBundle
@@ -11,6 +11,7 @@ import os
 import json
 import hashlib
 import base64
+import time
 
 router = APIRouter()
 
@@ -29,7 +30,10 @@ async def upload_video(
         tmp_path = tmp.name
 
     try:
-        raw_hashes = generate_video_hashes(tmp_path)
+        start = time.time()
+        raw_hashes = generate_video_hashes(tmp_path, frame_interval=1)
+        duration = time.time() - start
+        print(f"Hashing took {duration:.2f} seconds")
     finally:
         os.remove(tmp_path)
 
@@ -38,7 +42,7 @@ async def upload_video(
 
     # Create payload
     payload_dict = {
-        "frame_interval": 2,
+        "frame_interval": 1,
         "crop_region": [250, 250],
         "hashes": encoded_hashes
     }
@@ -56,7 +60,8 @@ async def upload_video(
 
     return {
         "message": "Video hashes signed and stored",
-        "total_hashes": len(encoded_hashes)
+        "total_hashes": len(encoded_hashes),
+        "hashing_duration_sec": round(duration, 2)
     }
 
 @router.post("/verify")
@@ -77,7 +82,7 @@ async def verify_video(
         tmp_path = tmp.name
 
     try:
-        uploaded_hashes = generate_video_hashes(tmp_path)
+        uploaded_hashes = generate_video_hashes(tmp_path, frame_interval=1)
     finally:
         os.remove(tmp_path)
 
