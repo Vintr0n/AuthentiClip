@@ -1,10 +1,11 @@
-# Updated video.py to explicitly set frame_interval=1 in both upload and verify
+# Updated video.py to offload CPU-bound work and remove public_key_b64 from verify
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
 from sqlalchemy.orm import Session
 from app.models import User, SignedBundle
 from app.database import get_db
 from app.hash_utils import generate_video_hashes
 from app.crypto_utils import sign_data, verify_signature
+from starlette.concurrency import run_in_threadpool
 
 import tempfile
 import os
@@ -31,16 +32,14 @@ async def upload_video(
 
     try:
         start = time.time()
-        raw_hashes = generate_video_hashes(tmp_path, frame_interval=1)
+        raw_hashes = await run_in_threadpool(generate_video_hashes, tmp_path, 1)
         duration = time.time() - start
         print(f"Hashing took {duration:.2f} seconds")
     finally:
         os.remove(tmp_path)
 
-    # Encode each hash as UTF-8 to normalize them
     encoded_hashes = [h.encode("utf-8").decode("utf-8") for h in raw_hashes]
 
-    # Create payload
     payload_dict = {
         "frame_interval": 1,
         "crop_region": [250, 250],
@@ -49,7 +48,7 @@ async def upload_video(
     payload_str = json.dumps(payload_dict)
     digest = hashlib.sha256(payload_str.encode("utf-8")).digest()
 
-    signature = sign_data(user.private_key, digest)
+    signature = await run_in_threadpool(sign_data, user.private_key, digest)
 
     db.add(SignedBundle(
         user_id=user.id,
@@ -67,7 +66,6 @@ async def upload_video(
 @router.post("/verify")
 async def verify_video(
     username: str = Form(...),
-    public_key_b64: str = Form(...),
     video_file: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
@@ -75,14 +73,17 @@ async def verify_video(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    public_key_bytes = base64.b64decode(public_key_b64)
+    if not user.public_key:
+        raise HTTPException(status_code=400, detail="User does not have a public key on file")
+
+    public_key_bytes = user.public_key
 
     with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp:
         tmp.write(await video_file.read())
         tmp_path = tmp.name
 
     try:
-        uploaded_hashes = generate_video_hashes(tmp_path, frame_interval=1)
+        uploaded_hashes = await run_in_threadpool(generate_video_hashes, tmp_path, 1)
     finally:
         os.remove(tmp_path)
 
@@ -93,7 +94,8 @@ async def verify_video(
     payload_str = bundle.payload
     digest = hashlib.sha256(payload_str.encode("utf-8")).digest()
 
-    if not verify_signature(digest, bundle.signature, public_key_bytes):
+    verified = await run_in_threadpool(verify_signature, digest, bundle.signature, public_key_bytes)
+    if not verified:
         raise HTTPException(status_code=400, detail="Signature verification failed")
 
     payload = json.loads(payload_str)
