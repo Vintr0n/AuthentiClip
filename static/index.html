@@ -84,7 +84,7 @@
       form.append('username', username);
       form.append('password', password);
 
-      const res = await fetch(`${API}/login`, { method: 'POST', body: form });
+      const res = await fetch(`${API}/auth/login`, { method: 'POST', body: form });
       if (res.ok) {
         const data = await res.json();
         saveToken(data.token, username);
@@ -103,7 +103,7 @@
       form.append('username', username);
       form.append('password', password);
 
-      const res = await fetch(`${API}/signup`, { method: 'POST', body: form });
+      const res = await fetch(`${API}/auth/signup`, { method: 'POST', body: form });
       if (res.ok) {
         alert('Signup successful, you can now log in.');
       } else {
