@@ -1,3 +1,4 @@
+# Updated video.py for v5 with UTF-8 encoding per hash, then bundling
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
 from sqlalchemy.orm import Session
 from app.models import User, SignedBundle
@@ -9,6 +10,7 @@ import tempfile
 import os
 import json
 import hashlib
+import base64
 
 router = APIRouter()
 
@@ -27,23 +29,24 @@ async def upload_video(
         tmp_path = tmp.name
 
     try:
-        scene_hashes = generate_video_hashes(tmp_path)
+        raw_hashes = generate_video_hashes(tmp_path)
     finally:
         os.remove(tmp_path)
+
+    # Encode each hash as UTF-8 to normalize them
+    encoded_hashes = [h.encode("utf-8").decode("utf-8") for h in raw_hashes]
 
     # Create payload
     payload_dict = {
         "frame_interval": 2,
         "crop_region": [250, 250],
-        "hashes": scene_hashes
+        "hashes": encoded_hashes
     }
     payload_str = json.dumps(payload_dict)
     digest = hashlib.sha256(payload_str.encode("utf-8")).digest()
 
-    # Sign payload digest
     signature = sign_data(user.private_key, digest)
 
-    # Store bundle in DB
     db.add(SignedBundle(
         user_id=user.id,
         payload=payload_str,
@@ -53,7 +56,7 @@ async def upload_video(
 
     return {
         "message": "Video hashes signed and stored",
-        "total_hashes": len(scene_hashes)
+        "total_hashes": len(encoded_hashes)
     }
 
 @router.post("/verify")
@@ -63,8 +66,6 @@ async def verify_video(
     video_file: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
-    import base64
-
     user = db.query(User).filter(User.username == username).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -80,19 +81,16 @@ async def verify_video(
     finally:
         os.remove(tmp_path)
 
-    # For now, use the latest bundle by the user
     bundle = db.query(SignedBundle).filter(SignedBundle.user_id == user.id).order_by(SignedBundle.id.desc()).first()
     if not bundle:
         raise HTTPException(status_code=404, detail="No signed bundle found")
 
-    # Verify the signature first
     payload_str = bundle.payload
     digest = hashlib.sha256(payload_str.encode("utf-8")).digest()
 
     if not verify_signature(digest, bundle.signature, public_key_bytes):
         raise HTTPException(status_code=400, detail="Signature verification failed")
 
-    # Extract original signed hashes
     payload = json.loads(payload_str)
     signed_hashes = payload["hashes"]
 
