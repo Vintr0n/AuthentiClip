@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, LargeBinary, ForeignKey, String
+from sqlalchemy import Column, Integer, LargeBinary, ForeignKey, String, Text
 from sqlalchemy.orm import relationship
 from app.database import Base
 
@@ -11,15 +11,15 @@ class User(Base):
     private_key = Column(LargeBinary, nullable=True)
     public_key = Column(LargeBinary, nullable=True)
 
-    video_hashes = relationship("VideoHash", back_populates="user")
+    bundles = relationship("SignedBundle", back_populates="user")
 
 
-class VideoHash(Base):
-    __tablename__ = "video_hashes"
+class SignedBundle(Base):
+    __tablename__ = "signed_bundles"
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
-    scene_hash = Column(String, index=True)  # Keep as string for `phash`
-    signature = Column(LargeBinary)
+    payload = Column(Text)  # JSON string of frame hashes and metadata
+    signature = Column(LargeBinary)  # Ed25519 signature of the payload
 
-    user = relationship("User", back_populates="video_hashes")
+    user = relationship("User", back_populates="bundles")
