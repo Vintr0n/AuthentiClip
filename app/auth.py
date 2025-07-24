@@ -1,4 +1,3 @@
-# Updated auth.py to include login, signup, and session token issuance
 from fastapi import APIRouter, Depends, HTTPException, status, Header, Form
 from sqlalchemy.orm import Session
 from app.models import User, Session as UserSession
@@ -26,21 +25,14 @@ def signup(
     if existing_user:
         raise HTTPException(status_code=400, detail="Username already exists")
 
-    private_key, public_key = generate_key_pair()
+    private_key_bytes, public_key_bytes = generate_key_pair()
     hashed_pw = hash_password(password)
 
     user = User(
         username=username,
         hashed_password=hashed_pw,
-        private_key=private_key.private_bytes(
-            encoding=serialization.Encoding.Raw,
-            format=serialization.PrivateFormat.Raw,
-            encryption_algorithm=serialization.NoEncryption()
-        ),
-        public_key=public_key.public_bytes(
-            encoding=serialization.Encoding.Raw,
-            format=serialization.PublicFormat.Raw
-        )
+        private_key=private_key_bytes,
+        public_key=public_key_bytes
     )
     db.add(user)
     db.commit()
