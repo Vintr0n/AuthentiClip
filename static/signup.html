@@ -7,13 +7,67 @@
 </head>
 <body>
     <h1>Create Account</h1>
-    <form method="POST" action="/auth/register">
+    <div id="alert-container"></div>
+    <form id="signupForm">
         <label>Username</label>
-        <input type="text" name="username" placeholder="Username" required />
+        <input type="text" id="username" placeholder="Username" required />
         <label>Password</label>
-        <input type="password" name="password" placeholder="Password" required />
+        <input type="password" id="password" placeholder="Password" required />
         <button type="submit">Sign Up</button>
     </form>
     <p>Already have an account? <a href="index.html">Sign in here</a></p>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const signupForm = document.getElementById('signupForm');
+        const alertContainer = document.getElementById('alert-container');
+
+        function showAlert(message, type = 'error') {
+            alertContainer.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => {
+                alertContainer.innerHTML = '';
+            }, 4000);
+        }
+
+        signupForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!username || !password) {
+                showAlert('Please enter both username and password.');
+                return;
+            }
+
+            fetch('/auth/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            })
+            .then(async response => {
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Signup failed');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.access_token) {
+                    localStorage.setItem('authToken', data.access_token);
+                    window.location.href = 'upload_video.html';
+                } else {
+                    showAlert('Signup successful. Please login.');
+                    window.location.href = 'index.html';
+                }
+            })
+            .catch(err => {
+                showAlert(err.message || 'Signup failed');
+            });
+        });
+    });
+    </script>
 </body>
 </html>
