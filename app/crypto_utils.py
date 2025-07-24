@@ -1,3 +1,4 @@
+# Updated crypto_utils.py with salted SHA256 password hashing and serialized Ed25519 keys
 import hashlib
 import os
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey, Ed25519PublicKey
