@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Auth - Verify Video</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="page-wrapper">
+        <div class="upload-container fade-in">
+            <div class="header">
+                <h1>Verify Video</h1>
+                <p>Upload a verification video and specify the username to verify against</p>
+                <div class="mt-4">
+                    <span class="text-sm">Welcome, <span id="username">User</span></span>
+                    <button id="logoutBtn" class="btn btn-secondary" style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.875rem;">
+                        Logout
+                    </button>
+                </div>
+            </div>
+            
+            <div class="form-container">
+                <div id="alert-container"></div>
+                
+                <form id="verifyForm">
+                    <div class="form-group">
+                        <label for="targetUsername" class="form-label">Username to Verify Against</label>
+                        <input 
+                            type="text" 
+                            id="targetUsername" 
+                            name="targetUsername" 
+                            class="form-input" 
+                            placeholder="Enter username to verify against"
+                            required
+                        >
+                        <small class="text-xs text-secondary">Enter the username whose video you want to verify against</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Select Verification Video</label>
+                        <div class="file-upload-area" id="uploadArea">
+                            <div class="upload-icon">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div class="upload-text">Click to upload verification video</div>
+                            <div class="upload-subtext">MP4, AVI, MOV up to 100MB</div>
+                            <input type="file" id="videoFile" name="video" class="file-input" accept="video/*" required>
+                        </div>
+                        
+                        <div class="file-info" id="fileInfo">
+                            <div class="file-name" id="fileName"></div>
+                            <div class="file-size" id="fileSize"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-container" id="progressContainer" style="display: none;">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-full" id="verifyBtn">
+                        Verify Video
+                    </button>
+                </form>
+                
+                <div id="verificationResult" class="mt-4" style="display: none;">
+                    <div class="alert" id="resultAlert">
+                        <div id="resultMessage"></div>
+                        <div id="resultDetails" class="mt-2 text-sm"></div>
+                    </div>
+                </div>
+                
+                <div class="nav-links">
+                    <a href="upload_video.html" class="nav-link">Go to Video Upload</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const verifyForm = document.getElementById('verifyForm');
+            const verifyBtn = document.getElementById('verifyBtn');
+            const alertContainer = document.getElementById('alert-container');
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('videoFile');
+            const fileInfo = document.getElementById('fileInfo');
+            const fileName = document.getElementById('fileName');
+            const fileSize = document.getElementById('fileSize');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const usernameSpan = document.getElementById('username');
+            const verificationResult = document.getElementById('verificationResult');
+            const resultAlert = document.getElementById('resultAlert');
+            const resultMessage = document.getElementById('resultMessage');
+            const resultDetails = document.getElementById('resultDetails');
+
+            // Check authentication
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Verify token and get user info
+            fetch('/auth/verify', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }).then(response => {
+                if (!response.ok) {
+                    localStorage.removeItem('authToken');
+                    window.location.href = 'index.html';
+                    return;
+                }
+                return response.json();
+            }).then(data => {
+                if (data && data.username) {
+                    usernameSpan.textContent = data.username;
+                }
+            }).catch(() => {
+                localStorage.removeItem('authToken');
+                window.location.href = 'index.html';
+            });
+
+            // Logout functionality
+            logoutBtn.addEventListener('click', function() {
+                localStorage.removeItem('authToken');
+                window.location.href = 'index.html';
+            });
+
+            function showAlert(message, type = 'error') {
+                alertContainer.innerHTML = `
+                    <div class="alert alert-${type}">
+                        ${message}
+                    </div>
+                `;
+                setTimeout(() => {
+                    alertContainer.innerHTML = '';
+                }, 5000);
+            }
+
+            function showVerificationResult(isMatch, details = '') {
+                verificationResult.style.display = 'block';
+                
+                if (isMatch) {
+                    resultAlert.className = 'alert alert-success';
+                    resultMessage.textContent = '✓ Video verification successful!';
+                    resultDetails.textContent = 'The uploaded video matches the target user\'s video.';
+                } else {
+                    resultAlert.className = 'alert alert-error';
+                    resultMessage.textContent = '✗ Video verification failed.';
+                    resultDetails.textContent = 'The uploaded video does not match the target user\'s video.';
+                }
+                
+                if (details) {
+                    resultDetails.textContent += ' ' + details;
+                }
+            }
+
+            function setLoading(loading) {
+                if (loading) {
+                    verifyBtn.classList.add('btn-loading');
+                    verifyBtn.disabled = true;
+                } else {
+                    verifyBtn.classList.remove('btn-loading');
+                    verifyBtn.disabled = false;
+                }
+            }
+
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            function updateFileInfo(file) {
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                fileInfo.classList.add('show');
+            }
+
+            // File input change handler
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    updateFileInfo(file);
+                    verificationResult.style.display = 'none';
+                }
+            });
+
+            // Drag and drop functionality
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const file = files[0];
+                    if (file.type.startsWith('video/')) {
+                        fileInput.files = files;
+                        updateFileInfo(file);
+                        verificationResult.style.display = 'none';
+                    } else {
+                        showAlert('Please select a valid video file.');
+                    }
+                }
+            });
+
+            // Form submission
+            verifyForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const file = fileInput.files[0];
+                const targetUsername = document.getElementById('targetUsername').value;
+                
+                if (!file) {
+                    showAlert('Please select a video file.');
+                    return;
+                }
+
+                if (!targetUsername.trim()) {
+                    showAlert('Please enter a username to verify against.');
+                    return;
+                }
+
+                // Check file size (100MB limit)
+                if (file.size > 100 * 1024 * 1024) {
+                    showAlert('File size must be less than 100MB.');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('video', file);
+                formData.append('target_username', targetUsername.trim());
+                
+                setLoading(true);
+                progressContainer.style.display = 'block';
+                verificationResult.style.display = 'none';
+
+                try {
+                    const xhr = new XMLHttpRequest();
+                    
+                    // Progress tracking
+                    xhr.upload.addEventListener('progress', function(e) {
+                        if (e.lengthComputable) {
+                            const percentComplete = (e.loaded / e.total) * 100;
+                            progressBar.style.width = percentComplete + '%';
+                        }
+                    });
+
+                    xhr.onload = function() {
+                        if (xhr.status === 200) {
+                            const data = JSON.parse(xhr.responseText);
+                            progressBar.style.width = '100%';
+                            
+                            // Show verification result
+                            showVerificationResult(data.match, data.details || '');
+                            
+                            setTimeout(() => {
+                                progressContainer.style.display = 'none';
+                                progressBar.style.width = '0%';
+                            }, 1000);
+                        } else {
+                            const errorData = JSON.parse(xhr.responseText);
+                            showAlert(errorData.detail || 'Verification failed. Please try again.');
+                            progressContainer.style.display = 'none';
+                        }
+                        setLoading(false);
+                    };
+
+                    xhr.onerror = function() {
+                        showAlert('Network error. Please try again.');
+                        setLoading(false);
+                        progressContainer.style.display = 'none';
+                    };
+
+                    xhr.open('POST', '/video/verify');
+                    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+                    xhr.send(formData);
+
+                } catch (error) {
+                    console.error('Verification error:', error);
+                    showAlert('Verification failed. Please try again.');
+                    setLoading(false);
+                    progressContainer.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+

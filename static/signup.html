@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Auth - Login</title>
+    <title>Video Auth - Sign Up</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -11,14 +11,14 @@
     <div class="page-wrapper">
         <div class="auth-container fade-in">
             <div class="header">
-                <h1>Welcome Back</h1>
-                <p>Sign in to your account to continue</p>
+                <h1>Create Account</h1>
+                <p>Join us to start verifying your videos</p>
             </div>
             
             <div class="form-container">
                 <div id="alert-container"></div>
                 
-                <form id="loginForm">
+                <form id="signupForm">
                     <div class="form-group">
                         <label for="username" class="form-label">Username</label>
                         <input 
@@ -26,9 +26,11 @@
                             id="username" 
                             name="username" 
                             class="form-input" 
-                            placeholder="Enter your username"
+                            placeholder="Choose a username"
                             required
+                            minlength="3"
                         >
+                        <small class="text-xs text-secondary">At least 3 characters</small>
                     </div>
                     
                     <div class="form-group">
@@ -38,21 +40,35 @@
                             id="password" 
                             name="password" 
                             class="form-input" 
-                            placeholder="Enter your password"
+                            placeholder="Create a strong password"
+                            required
+                            minlength="6"
+                        >
+                        <small class="text-xs text-secondary">At least 6 characters</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmPassword" class="form-label">Confirm Password</label>
+                        <input 
+                            type="password" 
+                            id="confirmPassword" 
+                            name="confirmPassword" 
+                            class="form-input" 
+                            placeholder="Confirm your password"
                             required
                         >
                     </div>
                     
-                    <button type="submit" class="btn btn-primary btn-full" id="loginBtn">
-                        Sign In
+                    <button type="submit" class="btn btn-primary btn-full" id="signupBtn">
+                        Create Account
                     </button>
                 </form>
             </div>
             
             <div class="nav-links">
                 <p class="text-sm text-center">
-                    Don't have an account? 
-                    <a href="signup.html" class="nav-link">Create one here</a>
+                    Already have an account? 
+                    <a href="index.html" class="nav-link">Sign in here</a>
                 </p>
             </div>
         </div>
@@ -60,9 +76,11 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const loginForm = document.getElementById('loginForm');
-            const loginBtn = document.getElementById('loginBtn');
+            const signupForm = document.getElementById('signupForm');
+            const signupBtn = document.getElementById('signupBtn');
             const alertContainer = document.getElementById('alert-container');
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
 
             function showAlert(message, type = 'error') {
                 alertContainer.innerHTML = `
@@ -77,22 +95,46 @@
 
             function setLoading(loading) {
                 if (loading) {
-                    loginBtn.classList.add('btn-loading');
-                    loginBtn.disabled = true;
+                    signupBtn.classList.add('btn-loading');
+                    signupBtn.disabled = true;
                 } else {
-                    loginBtn.classList.remove('btn-loading');
-                    loginBtn.disabled = false;
+                    signupBtn.classList.remove('btn-loading');
+                    signupBtn.disabled = false;
                 }
             }
 
-            loginForm.addEventListener('submit', async function(e) {
+            function validatePasswords() {
+                const password = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+                
+                if (confirmPassword && password !== confirmPassword) {
+                    confirmPasswordInput.setCustomValidity('Passwords do not match');
+                    return false;
+                } else {
+                    confirmPasswordInput.setCustomValidity('');
+                    return true;
+                }
+            }
+
+            confirmPasswordInput.addEventListener('input', validatePasswords);
+            passwordInput.addEventListener('input', validatePasswords);
+
+            signupForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
-                const formData = new FormData(loginForm);
+                if (!validatePasswords()) {
+                    showAlert('Passwords do not match.');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('username', document.getElementById('username').value);
+                formData.append('password', document.getElementById('password').value);
+                
                 setLoading(true);
 
                 try {
-                    const response = await fetch('/auth/login', {
+                    const response = await fetch('/auth/signup', {
                         method: 'POST',
                         body: formData
                     });
@@ -100,19 +142,17 @@
                     const data = await response.json();
 
                     if (response.ok) {
-                        // Store the token
-                        localStorage.setItem('authToken', data.token);
-                        showAlert('Login successful! Redirecting...', 'success');
+                        showAlert('Account created successfully! Please sign in.', 'success');
                         
-                        // Redirect to upload page after a short delay
+                        // Redirect to login page after a short delay
                         setTimeout(() => {
-                            window.location.href = 'upload_video.html';
-                        }, 1500);
+                            window.location.href = 'index.html';
+                        }, 2000);
                     } else {
-                        showAlert(data.detail || 'Login failed. Please check your credentials.');
+                        showAlert(data.detail || 'Failed to create account. Please try again.');
                     }
                 } catch (error) {
-                    console.error('Login error:', error);
+                    console.error('Signup error:', error);
                     showAlert('Network error. Please try again.');
                 } finally {
                     setLoading(false);
