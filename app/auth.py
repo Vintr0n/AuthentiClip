@@ -11,10 +11,6 @@ import base64
 
 router = APIRouter()
 
-class SignupResponse(BaseModel):
-    id: int
-    username: str
-    public_key: str
 
 @router.post("/signup", response_model=SignupResponse)
 def signup(
@@ -63,7 +59,7 @@ def login(username: str = Form(...), password: str = Form(...), db: Session = De
     db.add(session)
     db.commit()
 
-    return {"token": session_token}
+    return {"access_token": session_token, "token_type": "bearer"}
 
 @router.get("/username/{username}")
 def get_user(username: str, db: Session = Depends(get_db)):
