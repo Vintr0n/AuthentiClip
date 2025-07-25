@@ -11,16 +11,14 @@ export default function Signup() {
     e.preventDefault();
     setMessage("");
 
+    const formData = new FormData();
+    formData.append("username", username);
+    formData.append("password", password);
+
     try {
       const res = await fetch("/auth/signup", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username,
-          password,
-        }),
+        body: formData,
       });
 
       const data = await res.json();
@@ -32,7 +30,7 @@ export default function Signup() {
         throw new Error(msg);
       }
 
-      setMessage("Signup successful! Redirecting to login...");
+      setMessage("Signup successful! Redirecting...");
       setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
       setMessage(err.message);
@@ -46,7 +44,7 @@ export default function Signup() {
         <div>
           <input
             type="text"
-            placeholder="Email"
+            placeholder="Username"
             className="w-full px-4 py-2 border rounded"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
