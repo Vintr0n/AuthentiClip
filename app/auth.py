@@ -85,7 +85,7 @@ def logout(
 
 
 @router.get("/me")
-def get_me(current_user: User = Depends(lambda: get_current_user())):
+def get_me(current_user: User = Depends(get_current_user)):
     return {
         "id": current_user.id,
         "username": current_user.username
