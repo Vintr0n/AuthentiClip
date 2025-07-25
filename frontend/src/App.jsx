@@ -1,10 +1,11 @@
-import { Routes, Route } from 'react-router-dom'
-import Header from './components/Header'
-import UploadVideo from './pages/UploadVideo'
-import Login from './pages/Login'
-import Verify from './pages/Verify'
-import About from './pages/About'
-import FAQ from './pages/FAQ'
+import { Routes, Route } from 'react-router-dom';
+import Header from './components/Header';
+import UploadVideo from './pages/UploadVideo';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import Verify from './pages/Verify';
+import About from './pages/About';
+import FAQ from './pages/FAQ';
 
 function App() {
   return (
@@ -14,13 +15,14 @@ function App() {
         <Routes>
           <Route path="/upload" element={<UploadVideo />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} /> 
           <Route path="/verify" element={<Verify />} />
           <Route path="/about" element={<About />} />
           <Route path="/faq" element={<FAQ />} />
         </Routes>
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
