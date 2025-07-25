@@ -4,12 +4,14 @@ from app.models import User, Session as UserSession
 from app.database import get_db
 from app.crypto_utils import verify_password, hash_password, generate_key_pair
 from pydantic import BaseModel
+from fastapi.responses import JSONResponse
+
+
 import uuid
 from datetime import datetime, timedelta
 import base64
 
 router = APIRouter()
-
 
 @router.post("/signup")
 def signup(
@@ -34,11 +36,15 @@ def signup(
     db.commit()
     db.refresh(user)
 
-    return SignupResponse(
-        id=user.id,
-        username=user.username,
-        public_key=base64.b64encode(user.public_key).decode("utf-8")
+    return JSONResponse(
+        content={
+            "id": user.id,
+            "username": user.username,
+            "public_key": base64.b64encode(user.public_key).decode("utf-8")
+        }
     )
+
+
 
 @router.post("/login")
 def login(username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
