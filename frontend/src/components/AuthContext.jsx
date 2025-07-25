@@ -5,9 +5,9 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState(localStorage.getItem("access_token"));
 
-  const token = localStorage.getItem("access_token");
-
+  // Run when token changes
   useEffect(() => {
     async function fetchUser() {
       if (!token) {
@@ -35,16 +35,22 @@ export function AuthProvider({ children }) {
       }
     }
 
+    setLoading(true); // Reset loading state during re-fetch
     fetchUser();
   }, [token]);
 
   const logout = () => {
     localStorage.removeItem("access_token");
     setUser(null);
+    setToken(null);
+  };
+
+  const refreshAuth = () => {
+    setToken(localStorage.getItem("access_token")); // trigger fetchUser
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, logout }}>
+    <AuthContext.Provider value={{ user, loading, logout, refreshAuth }}>
       {children}
     </AuthContext.Provider>
   );
