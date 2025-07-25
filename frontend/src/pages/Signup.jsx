@@ -16,7 +16,7 @@ export default function Signup() {
     formData.append("password", password);
 
     try {
-      const res = await fetch("/auth/signup", {
+      const res = await fetch("https://video-auth-serverside.onrender.com/auth/signup", {
         method: "POST",
         body: formData,
       });
@@ -31,7 +31,7 @@ export default function Signup() {
       }
 
       setMessage("Signup successful! Redirecting...");
-      setTimeout(() => navigate("/login"), 1500);
+      setTimeout(() => navigate("/login"), 1500);  // Stay within frontend
     } catch (err) {
       setMessage(err.message);
     }
