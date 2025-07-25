@@ -1,3 +1,20 @@
+from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
+from sqlalchemy.orm import Session
+from app.models import SignedBundle, User
+from app.database import get_db
+from app.hash_utils import generate_video_hashes
+from app.crypto_utils import sign_data
+from app.auth import get_current_user
+from starlette.concurrency import run_in_threadpool
+
+import tempfile
+import os
+import json
+import hashlib
+import time
+
+router = APIRouter()
+
 @router.post("/upload")
 async def upload_video(
     current_user: User = Depends(get_current_user),
