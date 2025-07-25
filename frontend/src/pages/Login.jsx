@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -27,9 +29,11 @@ export default function Login() {
         throw new Error(data.detail || 'Login failed');
       }
 
-      // Save token to localStorage (or context)
+      // Save token
       localStorage.setItem('access_token', data.access_token);
-      window.location.href = '/upload'; // redirect to upload
+
+      // Navigate to upload page within SPA
+      navigate('/upload');
     } catch (err) {
       setError(err.message);
     }

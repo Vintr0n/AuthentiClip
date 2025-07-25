@@ -13,6 +13,7 @@ function App() {
       <Header />
       <div className="p-4">
         <Routes>
+	  <Route path="/" element={<Login />} />
           <Route path="/upload" element={<UploadVideo />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
