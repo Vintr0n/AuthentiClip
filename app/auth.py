@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends, Request, Header
+from fastapi import APIRouter, HTTPException, Depends, Request, Header, Form
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.hash_utils import verify_password, hash_password
@@ -13,7 +13,11 @@ router = APIRouter()
 
 
 @router.post("/signup")
-def signup(username: str, password: str, db: Session = Depends(get_db)):
+def signup(
+    username: str = Form(...),
+    password: str = Form(...),
+    db: Session = Depends(get_db)
+):
     if db.query(User).filter(User.username == username).first():
         raise HTTPException(status_code=400, detail="Username already exists")
 
@@ -36,8 +40,13 @@ def signup(username: str, password: str, db: Session = Depends(get_db)):
         "public_key": base64.b64encode(user.public_key).decode("utf-8")
     }
 
+
 @router.post("/login")
-def login(username: str, password: str, db: Session = Depends(get_db)):
+def login(
+    username: str = Form(...),
+    password: str = Form(...),
+    db: Session = Depends(get_db)
+):
     user = db.query(User).filter(User.username == username).first()
     if not user or not verify_password(password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
@@ -56,8 +65,13 @@ def login(username: str, password: str, db: Session = Depends(get_db)):
 
     return {"access_token": token, "token_type": "bearer"}
 
+
 @router.post("/logout")
-def logout(request: Request, authorization: Optional[str] = Header(None), db: Session = Depends(get_db)):
+def logout(
+    request: Request,
+    authorization: Optional[str] = Header(None),
+    db: Session = Depends(get_db)
+):
     if not authorization or not authorization.startswith("Bearer "):
         return {"message": "Invalid header"}
 
@@ -69,12 +83,14 @@ def logout(request: Request, authorization: Optional[str] = Header(None), db: Se
 
     return {"message": "Logged out"}
 
+
 @router.get("/me")
 def get_me(current_user: User = Depends(lambda: get_current_user())):
     return {
         "id": current_user.id,
         "username": current_user.username
     }
+
 
 @router.get("/username/{username}")
 def get_user(username: str, db: Session = Depends(get_db)):
@@ -88,7 +104,11 @@ def get_user(username: str, db: Session = Depends(get_db)):
         "public_key": base64.b64encode(user.public_key).decode("utf-8") if user.public_key else None
     }
 
-def get_current_user(authorization: Optional[str] = Header(None), db: Session = Depends(get_db)) -> User:
+
+def get_current_user(
+    authorization: Optional[str] = Header(None),
+    db: Session = Depends(get_db)
+) -> User:
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Invalid or missing token")
 
