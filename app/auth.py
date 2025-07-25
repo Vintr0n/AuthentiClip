@@ -7,6 +7,7 @@ from app.models import User, Session as UserSession
 from datetime import datetime, timedelta
 from typing import Optional
 import base64
+import uuid
 
 router = APIRouter(prefix="/auth")
 
@@ -40,7 +41,6 @@ def login(username: str, password: str, db: Session = Depends(get_db)):
     if not user or not verify_password(password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    # Clean up expired sessions
     db.query(UserSession).filter(UserSession.expires_at < datetime.utcnow()).delete()
 
     token = str(uuid.uuid4())
