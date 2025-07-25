@@ -2,46 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Upload Video</title>
-    <link rel="stylesheet" href="/style.css">
+    <title>Upload & Verify</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="page-wrapper">
-    <div class="auth-container">
-        <div class="header">
-            <h1>Upload & Verify</h1>
-        </div>
-        <div class="form-container">
-            <div id="alert" class="alert hidden"></div>
+    <h1>Upload & Verify</h1>
 
-            <form id="upload-form" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label class="form-label">Upload Video</label>
-                    <input class="form-input" type="file" name="file" required>
-                </div>
-                <button class="btn btn-primary btn-full" type="submit">Upload</button>
-            </form>
+    <div id="alert" class="alert hidden"></div>
 
-            <form id="verify-form" enctype="multipart/form-data" style="margin-top: 2rem;">
-                <div class="form-group">
-                    <label class="form-label">Verify Video</label>
-                    <input class="form-input" type="file" name="file" required>
-                </div>
-                <button class="btn btn-secondary btn-full" type="submit">Verify</button>
-            </form>
+    <form id="upload-form">
+        <label for="upload">Upload Video</label>
+        <input type="file" id="upload" name="file" accept="video/mp4" required>
+        <button type="submit">Upload</button>
+    </form>
 
-            <div class="nav-links">
-                <button class="btn btn-danger btn-full" onclick="logout()">Logout</button>
-            </div>
-        </div>
-    </div>
-</div>
-<script src="/scripts/video.js"></script>
-<script>
-    function logout() {
-        localStorage.removeItem('access_token');
-        window.location.href = '/index.html';
-    }
-</script>
+    <form id="verify-form">
+        <label for="verify">Verify Video</label>
+        <input type="file" id="verify" name="file" accept="video/mp4" required>
+        <button type="submit">Verify</button>
+    </form>
+
+    <button id="logout-btn">Logout</button>
+
+    <script src="/scripts/video.js"></script>
 </body>
 </html>
