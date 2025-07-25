@@ -1,3 +1,3 @@
 export default function FAQ() {
-  return h1 className=text-xlFAQ Pageh1
+  return <h1 className="text-xl">FAQ Page</h1>;
 }
