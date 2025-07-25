@@ -9,7 +9,8 @@ from typing import Optional
 import base64
 import uuid
 
-router = APIRouter(prefix="/auth")
+router = APIRouter()
+
 
 @router.post("/signup")
 def signup(username: str, password: str, db: Session = Depends(get_db)):
