@@ -1,8 +1,11 @@
 const VIDEO_API = '/video';
 
 document.addEventListener('DOMContentLoaded', () => {
-    if (!document.cookie.includes('session')) {
+    const token = localStorage.getItem('access_token');
+
+    if (!token) {
         window.location.href = 'index.html';
+        return;
     }
 
     const uploadForm = document.getElementById('upload-form');
@@ -11,39 +14,43 @@ document.addEventListener('DOMContentLoaded', () => {
     if (uploadForm) {
         uploadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const data = new FormData(uploadForm);
+            const formData = new FormData(uploadForm);
             const res = await fetch(`${VIDEO_API}/upload`, {
                 method: 'POST',
-                body: data,
-                credentials: 'include'
+                body: formData,
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             });
-            handleVideoResponse(res);
+            const result = await res.json();
+            if (res.ok) {
+                showAlert('Upload successful.', 'alert-success');
+            } else {
+                showAlert(result.detail || 'Upload failed', 'alert-error');
+            }
         });
     }
 
     if (verifyForm) {
         verifyForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const data = new FormData(verifyForm);
+            const formData = new FormData(verifyForm);
             const res = await fetch(`${VIDEO_API}/verify`, {
                 method: 'POST',
-                body: data,
-                credentials: 'include'
+                body: formData,
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             });
-            handleVideoResponse(res);
+            const result = await res.json();
+            if (res.ok) {
+                showAlert(result.message || 'Verification complete', 'alert-success');
+            } else {
+                showAlert(result.detail || 'Verification failed', 'alert-error');
+            }
         });
     }
 });
-
-function handleVideoResponse(res) {
-    res.json().then(data => {
-        if (res.ok) {
-            showAlert(data.message || 'Success', 'alert-success');
-        } else {
-            showAlert(data.message || 'Failed', 'alert-error');
-        }
-    });
-}
 
 function showAlert(msg, className) {
     const alert = document.getElementById('alert');
