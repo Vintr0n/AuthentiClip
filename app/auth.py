@@ -1,109 +1,58 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Header, Form, Request
+from fastapi import APIRouter, HTTPException, Depends, Request, Header
 from sqlalchemy.orm import Session
-from app.models import User, Session as UserSession
 from app.database import get_db
-from app.crypto_utils import verify_password, hash_password, generate_key_pair
-from pydantic import BaseModel
-from fastapi.responses import JSONResponse
-
-
-import uuid
+from app.hash_utils import verify_password
+from app.crypto_utils import generate_token
+from app.models import User, UserSession
 from datetime import datetime, timedelta
-import base64
+from typing import Optional
 
-router = APIRouter()
+router = APIRouter(prefix="/auth")
+
 
 @router.post("/signup")
-def signup(
-    username: str = Form(...),
-    password: str = Form(...),
-    db: Session = Depends(get_db)
-):
-    existing_user = db.query(User).filter(User.username == username).first()
-    if existing_user:
-        raise HTTPException(status_code=400, detail="Username already exists")
+def signup(email: str, password: str, db: Session = Depends(get_db)):
+    if db.query(User).filter(User.email == email).first():
+        raise HTTPException(status_code=400, detail="Email already registered")
 
-    private_key, public_key = generate_key_pair()
-    hashed_pw = hash_password(password)
-
-    user = User(
-        username=username,
-        hashed_password=hashed_pw,
-        private_key=private_key,
-        public_key=public_key
-    )
+    user = User(email=email)
+    user.set_password(password)
     db.add(user)
     db.commit()
     db.refresh(user)
-
-    return JSONResponse(
-        content={
-            "id": user.id,
-            "username": user.username,
-            "public_key": base64.b64encode(user.public_key).decode("utf-8")
-        }
-    )
-
+    return {"message": "User created"}
 
 
 @router.post("/login")
-def login(username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.username == username).first()
-    if not user or not verify_password(password, user.hashed_password):
+def login(username: str, password: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == username).first()
+    if not user or not verify_password(password, user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    # Clean up expired sessions
-    db.query(UserSession).filter(UserSession.expires_at < datetime.utcnow()).delete()
-
-    session_token = str(uuid.uuid4())
-    session = UserSession(
-        user_id=user.id,
-        session_token=session_token,
-        created_at=datetime.utcnow(),
-        expires_at=datetime.utcnow() + timedelta(days=7)
-    )
+    token = generate_token()
+    expires = datetime.utcnow() + timedelta(days=1)
+    session = UserSession(user_id=user.id, session_token=token, expires_at=expires)
     db.add(session)
     db.commit()
+    return {"access_token": token}
 
-    return {"access_token": session_token, "token_type": "bearer"}
 
-@router.post("/logout")
-def logout(request: Request, authorization: str = Header(...), db: Session = Depends(get_db)):
-    if not authorization.startswith("Bearer "):
-        return {"message": "Invalid header"}
-
-    token = authorization.split(" ")[1]
-    session = db.query(UserSession).filter(UserSession.session_token == token).first()
-    if session:
-        db.delete(session)
-        db.commit()
-
-    return {"message": "Logged out"}
-
-@router.get("/me")
-def get_me(current_user: User = Depends(lambda: get_current_user())):
-    return {
-        "id": current_user.id,
-        "username": current_user.username
-    }
-
-@router.get("/username/{username}")
-def get_user(username: str, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.username == username).first()
+@router.get("/username/{email}")
+def get_user_by_email(email: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == email).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
+    return {"id": user.id, "email": user.email}
 
-    return {
-        "id": user.id,
-        "username": user.username,
-        "public_key": base64.b64encode(user.public_key).decode("utf-8") if user.public_key else None
-    }
 
-def get_current_user(authorization: str = Header(...), db: Session = Depends(get_db)):
-    if not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Invalid authorization header")
+def get_current_user(
+    authorization: Optional[str] = Header(None),
+    db: Session = Depends(get_db)
+) -> User:
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Invalid or missing token")
 
-    token = authorization.split(" ")[1]
+    token = authorization[7:]
     session = db.query(UserSession).filter(
         UserSession.session_token == token,
         UserSession.expires_at > datetime.utcnow()
@@ -112,4 +61,13 @@ def get_current_user(authorization: str = Header(...), db: Session = Depends(get
     if not session:
         raise HTTPException(status_code=401, detail="Invalid or expired session")
 
-    return session.user
+    user = db.query(User).filter(User.id == session.user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return user
+
+
+@router.get("/me")
+def get_me(current_user: User = Depends(get_current_user)):
+    return {"id": current_user.id, "email": current_user.email}
