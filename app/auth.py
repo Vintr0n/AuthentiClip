@@ -1,27 +1,27 @@
 from fastapi import APIRouter, HTTPException, Depends, Request, Header
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.hash_utils import verify_password
-from app.crypto_utils import generate_token
+from app.crypto_utils import verify_password, generate_key_pair, hash_password
 from app.models import User, UserSession
 from datetime import datetime, timedelta
 from typing import Optional
+import base64
 
 router = APIRouter(prefix="/auth")
-
 
 @router.post("/signup")
 def signup(email: str, password: str, db: Session = Depends(get_db)):
     if db.query(User).filter(User.email == email).first():
         raise HTTPException(status_code=400, detail="Email already registered")
 
-    user = User(email=email)
-    user.set_password(password)
+    private_key, public_key = generate_key_pair()
+    password_hash = hash_password(password)
+
+    user = User(email=email, password_hash=password_hash, private_key=private_key, public_key=public_key)
     db.add(user)
     db.commit()
     db.refresh(user)
-    return {"message": "User created"}
-
+    return {"message": "User created", "public_key": base64.b64encode(user.public_key).decode()}
 
 @router.post("/login")
 def login(username: str, password: str, db: Session = Depends(get_db)):
@@ -29,21 +29,23 @@ def login(username: str, password: str, db: Session = Depends(get_db)):
     if not user or not verify_password(password, user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    token = generate_token()
+    token = str(uuid.uuid4())
     expires = datetime.utcnow() + timedelta(days=1)
     session = UserSession(user_id=user.id, session_token=token, expires_at=expires)
     db.add(session)
     db.commit()
-    return {"access_token": token}
-
+    return {"access_token": token, "token_type": "bearer"}
 
 @router.get("/username/{email}")
 def get_user_by_email(email: str, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == email).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    return {"id": user.id, "email": user.email}
-
+    return {
+        "id": user.id,
+        "email": user.email,
+        "public_key": base64.b64encode(user.public_key).decode() if user.public_key else None
+    }
 
 def get_current_user(
     authorization: Optional[str] = Header(None),
@@ -66,7 +68,6 @@ def get_current_user(
         raise HTTPException(status_code=404, detail="User not found")
 
     return user
-
 
 @router.get("/me")
 def get_me(current_user: User = Depends(get_current_user)):
