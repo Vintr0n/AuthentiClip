@@ -1,29 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Upload & Verify</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>Upload & Verify</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <h1>Upload & Verify</h1>
+  <h1>Upload & Verify</h1>
 
-    <div id="alert" class="alert hidden"></div>
+  <div id="alert" class="alert hidden"></div>
 
-    <form id="upload-form">
-        <label for="upload">Upload Video</label>
-        <input type="file" id="upload" name="file" accept="video/mp4" required>
-        <button type="submit">Upload</button>
-    </form>
+  <form id="upload-form">
+    <label for="upload">Upload Video</label>
+    <input type="file" id="upload" name="file" accept="video/mp4" required />
+    <button type="submit">Upload</button>
+  </form>
 
-    <form id="verify-form">
-        <label for="verify">Verify Video</label>
-        <input type="file" id="verify" name="file" accept="video/mp4" required>
-        <button type="submit">Verify</button>
-    </form>
+  <form id="verify-form">
+    <label for="verify">Verify Video</label>
+    <input type="file" id="verify" name="file" accept="video/mp4" required />
+    <input type="text" id="target-username" name="target_username" placeholder="Target Username" required />
+    <button type="submit">Verify</button>
+  </form>
 
-    <button id="logout-btn">Logout</button>
+  <button id="logout-btn">Logout</button>
 
-    <script src="/scripts/video.js"></script>
+  <script src="/scripts/video.js"></script>
 </body>
 </html>
