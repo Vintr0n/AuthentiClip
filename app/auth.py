@@ -12,10 +12,7 @@ import uuid
 router = APIRouter()
 
 # Must be defined before using it in dependencies
-def get_current_user(
-    authorization: Optional[str] = Header(None),
-    db: Session = Depends(get_db)
-) -> User:
+def get_current_user(authorization: Optional[str] = Header(None), db: Session = Depends(get_db)) -> User:
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Invalid or missing token")
 
@@ -33,6 +30,7 @@ def get_current_user(
         raise HTTPException(status_code=404, detail="User not found")
 
     return user
+
 
 
 @router.post("/signup")
@@ -91,12 +89,11 @@ def login(
 
 @router.post("/logout")
 def logout(
-    request: Request,
     authorization: Optional[str] = Header(None),
     db: Session = Depends(get_db)
 ):
     if not authorization or not authorization.startswith("Bearer "):
-        return {"message": "Invalid header"}
+        raise HTTPException(status_code=401, detail="Invalid or missing token")
 
     token = authorization.split(" ")[1]
     session = db.query(UserSession).filter(UserSession.session_token == token).first()
@@ -105,6 +102,7 @@ def logout(
         db.commit()
 
     return {"message": "Logged out"}
+
 
 
 @router.get("/me")

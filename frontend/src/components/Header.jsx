@@ -5,10 +5,19 @@ export default function Header() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
+const handleLogout = async () => {
+  const token = localStorage.getItem("access_token");
+  await fetch("https://video-auth-serverside.onrender.com/auth/logout", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  localStorage.removeItem("access_token");
+  window.location.href = "/login";
+};
+
 
   return (
     <nav className="bg-white shadow p-4 mb-6">
