@@ -1,58 +1,61 @@
-// src/pages/Signup.jsx
-import { useState } from 'react';
+import { useState } from "react";
 
 export default function Signup() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    setError(null);
-    setSuccess(null);
+
+    const formData = new FormData();
+    formData.append("username", username);
+    formData.append("password", password);
 
     try {
-      const response = await fetch('https://video-auth-serverside.onrender.com/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: email, password }),
+      const res = await fetch("/auth/signup", {
+        method: "POST",
+        body: formData,
       });
 
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.detail || 'Signup failed');
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.detail || "Signup failed");
+      }
 
-      setSuccess('Signup successful! You can now log in.');
+      setMessage("Signup successful!");
     } catch (err) {
-      setError(err.message);
+      setMessage(err.message);
     }
   };
 
   return (
-    <div className="max-w-md mx-auto p-4">
-      <h1 className="text-2xl mb-4">Signup</h1>
+    <div className="p-4 max-w-md mx-auto">
+      <h2 className="text-xl mb-4">Sign Up</h2>
       <form onSubmit={handleSignup} className="space-y-4">
         <input
-          type="email"
-          placeholder="Email"
-          className="w-full p-2 border"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="text"
+          placeholder="Username"
+          className="w-full border p-2"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
           required
         />
         <input
           type="password"
           placeholder="Password"
-          className="w-full p-2 border"
+          className="w-full border p-2"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded">
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white p-2 rounded"
+        >
           Sign Up
         </button>
-        {error && <p className="text-red-600">{error}</p>}
-        {success && <p className="text-green-600">{success}</p>}
+        {message && <p className="text-red-500 mt-2">{message}</p>}
       </form>
     </div>
   );
