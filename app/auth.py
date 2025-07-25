@@ -12,7 +12,7 @@ import base64
 router = APIRouter()
 
 
-@router.post("/signup", response_model=SignupResponse)
+@router.post("/signup")
 def signup(
     username: str = Form(...),
     password: str = Form(...),
