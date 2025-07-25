@@ -11,6 +11,11 @@ export default function Signup() {
     e.preventDefault();
     setMessage("");
 
+    if (!username.includes("@")) {
+      setMessage("Username must be a valid email address.");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("username", username);
     formData.append("password", password);
@@ -31,7 +36,7 @@ export default function Signup() {
       }
 
       setMessage("Signup successful! Redirecting...");
-      setTimeout(() => navigate("/login"), 1500);  // Stay within frontend
+      setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
       setMessage(err.message);
     }
@@ -43,8 +48,8 @@ export default function Signup() {
       <form onSubmit={handleSignup} className="space-y-4">
         <div>
           <input
-            type="text"
-            placeholder="Username"
+            type="email"
+            placeholder="Email"
             className="w-full px-4 py-2 border rounded"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
