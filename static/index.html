@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+<<<<<<< HEAD
     <title>Sign In</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -63,5 +64,36 @@
         });
     });
     </script>
+=======
+    <title>Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page-wrapper">
+    <div class="auth-container">
+        <div class="header">
+            <h1>Login</h1>
+        </div>
+        <div class="form-container">
+            <div id="alert" class="alert hidden"></div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" name="password" required>
+                </div>
+                <button class="btn btn-primary btn-full" type="submit">Login</button>
+            </form>
+            <div class="nav-links">
+                <a class="nav-link" href="signup.html">No account? Sign up</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="scripts/auth.js"></script>
+>>>>>>> 2bdca07 (Front end attempt 2)
 </body>
 </html>

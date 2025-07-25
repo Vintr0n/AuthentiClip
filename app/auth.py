@@ -1,5 +1,4 @@
-# Updated auth.py to include login, signup, and session token issuance
-from fastapi import APIRouter, Depends, HTTPException, status, Header, Form
+from fastapi import APIRouter, Depends, HTTPException, status, Header, Form, Request
 from sqlalchemy.orm import Session
 from app.models import User, Session as UserSession
 from app.database import get_db
@@ -47,6 +46,7 @@ def login(username: str = Form(...), password: str = Form(...), db: Session = De
     if not user or not verify_password(password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
+    # Clean up expired sessions
     db.query(UserSession).filter(UserSession.expires_at < datetime.utcnow()).delete()
 
     session_token = str(uuid.uuid4())
@@ -60,6 +60,26 @@ def login(username: str = Form(...), password: str = Form(...), db: Session = De
     db.commit()
 
     return {"access_token": session_token, "token_type": "bearer"}
+
+@router.post("/logout")
+def logout(request: Request, authorization: str = Header(...), db: Session = Depends(get_db)):
+    if not authorization.startswith("Bearer "):
+        return {"message": "Invalid header"}
+
+    token = authorization.split(" ")[1]
+    session = db.query(UserSession).filter(UserSession.session_token == token).first()
+    if session:
+        db.delete(session)
+        db.commit()
+
+    return {"message": "Logged out"}
+
+@router.get("/me")
+def get_me(current_user: User = Depends(lambda: get_current_user())):
+    return {
+        "id": current_user.id,
+        "username": current_user.username
+    }
 
 @router.get("/username/{username}")
 def get_user(username: str, db: Session = Depends(get_db)):

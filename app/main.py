@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+
 from app.database import engine, Base
 from app.auth import router as auth_router
 from app.video import router as video_router
@@ -14,10 +15,10 @@ Base.metadata.create_all(bind=engine)
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(video_router, prefix="/video", tags=["video"])
 
-# Mount the static directory at root
+# Serve static files
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
-# CORS (optional)
+# CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

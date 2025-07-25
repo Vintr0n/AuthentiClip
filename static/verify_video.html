@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+<<<<<<< HEAD
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Auth - Verify Video</title>
     <link rel="stylesheet" href="style.css">
@@ -307,3 +308,33 @@
 </body>
 </html>
 
+=======
+    <title>Verify Video</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page-wrapper">
+    <div class="upload-container">
+        <div class="header">
+            <h1>Verify Video</h1>
+        </div>
+        <div class="form-container">
+            <div id="alert" class="alert hidden"></div>
+            <form id="verify-form">
+                <div class="form-group">
+                    <label class="form-label">Video ID or Filename</label>
+                    <input type="text" class="form-input" name="videoId" required>
+                </div>
+                <button class="btn btn-primary btn-full" type="submit">Verify</button>
+            </form>
+            <div class="nav-links">
+                <a class="nav-link" href="upload_video.html">Back to Upload</a> |
+                <a class="nav-link" href="index.html" onclick="logout()">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="scripts/video.js"></script>
+</body>
+</html>
+>>>>>>> 2bdca07 (Front end attempt 2)
