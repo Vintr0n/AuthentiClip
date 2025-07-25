@@ -1,25 +1,28 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Signup from "./pages/Signup";
-import Login from "./pages/Login";
-import UploadVideo from "./pages/UploadVideo";
-import About from "./pages/About";
-import FAQ from "./pages/FAQ";
-import Verify from "./pages/Verify";
+import { Routes, Route } from 'react-router-dom';
+import Header from './components/Header';
+import UploadVideo from './pages/UploadVideo';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import Verify from './pages/Verify';
+import About from './pages/About';
+import FAQ from './pages/FAQ';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/upload" element={<UploadVideo />} />
-        <Route path="/verify" element={<Verify />} />
-        <Route path="/faq" element={<FAQ />} />
-        <Route path="/about" element={<About />} />
-        {/* Default fallback */}
-        <Route path="*" element={<div>404 Not Found</div>} />
-      </Routes>
-    </Router>
+    <div>
+      <Header />
+      <div className="p-4">
+        <Routes>
+          <Route path="/upload" element={<UploadVideo />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/verify" element={<Verify />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="*" element={<div>404 Not Found</div>} />
+        </Routes>
+      </div>
+    </div>
   );
 }
 
