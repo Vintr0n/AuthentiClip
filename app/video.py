@@ -1,38 +1,36 @@
-# Updated video.py to protect upload and verify endpoints with session auth
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
-from sqlalchemy.orm import Session
-from app.models import SignedBundle, User
-from app.database import get_db
-from app.hash_utils import generate_video_hashes
-from app.crypto_utils import sign_data, verify_signature
-from app.auth import get_current_user
-from starlette.concurrency import run_in_threadpool
-
-import tempfile
-import os
-import json
-import hashlib
-import time
-
-router = APIRouter()
-
 @router.post("/upload")
 async def upload_video(
     current_user: User = Depends(get_current_user),
     video_file: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp:
-        tmp.write(await video_file.read())
-        tmp_path = tmp.name
+    # --- Validate file type ---
+    if not video_file.filename.lower().endswith((".mp4")):
+        raise HTTPException(status_code=400, detail="Unsupported video format")
 
+    # --- Save temporarily ---
+    try:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp:
+            content = await video_file.read()
+            if not content:
+                raise HTTPException(status_code=400, detail="Empty video file")
+
+            tmp.write(content)
+            tmp_path = tmp.name
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to store video: {str(e)}")
+
+    # --- Generate perceptual hashes ---
     try:
         start = time.time()
         raw_hashes = await run_in_threadpool(generate_video_hashes, tmp_path, 1)
         duration = time.time() - start
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Hash generation failed: {str(e)}")
     finally:
         os.remove(tmp_path)
 
+    # --- Serialize hashes ---
     encoded_hashes = [h.encode("utf-8").decode("utf-8") for h in raw_hashes]
 
     payload_dict = {
@@ -42,7 +40,11 @@ async def upload_video(
     }
     payload_str = json.dumps(payload_dict)
     digest = hashlib.sha256(payload_str.encode("utf-8")).digest()
-    signature = await run_in_threadpool(sign_data, current_user.private_key, digest)
+
+    try:
+        signature = await run_in_threadpool(sign_data, current_user.private_key, digest)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Signing failed: {str(e)}")
 
     db.add(SignedBundle(
         user_id=current_user.id,
@@ -52,52 +54,8 @@ async def upload_video(
     db.commit()
 
     return {
-        "message": "Video hashes signed and stored",
+        "message": "Video uploaded, hashed, and signed successfully",
+        "filename": video_file.filename,
         "total_hashes": len(encoded_hashes),
         "hashing_duration_sec": round(duration, 2)
-    }
-
-@router.post("/verify")
-async def verify_video(
-    current_user: User = Depends(get_current_user),
-    video_file: UploadFile = File(...),
-    db: Session = Depends(get_db)
-):
-    if not current_user.public_key:
-        raise HTTPException(status_code=400, detail="User does not have a public key on file")
-
-    public_key_bytes = current_user.public_key
-
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp:
-        tmp.write(await video_file.read())
-        tmp_path = tmp.name
-
-    try:
-        uploaded_hashes = await run_in_threadpool(generate_video_hashes, tmp_path, 1)
-    finally:
-        os.remove(tmp_path)
-
-    bundle = db.query(SignedBundle).filter(SignedBundle.user_id == current_user.id).order_by(SignedBundle.id.desc()).first()
-    if not bundle:
-        raise HTTPException(status_code=404, detail="No signed bundle found")
-
-    payload_str = bundle.payload
-    digest = hashlib.sha256(payload_str.encode("utf-8")).digest()
-
-    verified = await run_in_threadpool(verify_signature, digest, bundle.signature, public_key_bytes)
-    if not verified:
-        raise HTTPException(status_code=400, detail="Signature verification failed")
-
-    payload = json.loads(payload_str)
-    signed_hashes = payload["hashes"]
-
-    match_count = sum(1 for h in uploaded_hashes if h in signed_hashes)
-    match_percent = match_count / max(len(uploaded_hashes), 1)
-
-    return {
-        "username": current_user.username,
-        "match_count": match_count,
-        "total_uploaded_hashes": len(uploaded_hashes),
-        "match_percentage": round(match_percent * 100, 2),
-        "verified": match_percent >= 0.8
     }
