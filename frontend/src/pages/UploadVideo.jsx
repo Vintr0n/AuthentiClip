@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { authFetch } from '../utils/authFetch';
 
 export default function UploadVideo() {
   const [file, setFile] = useState(null);
@@ -24,7 +25,7 @@ export default function UploadVideo() {
       setIsUploading(true);
 
       const token = localStorage.getItem('access_token');
-      const res = await fetch('https://video-auth-serverside.onrender.com/video/upload', {
+      const res = await authFetch('https://video-auth-serverside.onrender.com/video/upload', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,

@@ -1,10 +1,14 @@
-// src/components/RequireAuth.jsx
 import { Navigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function RequireAuth({ children }) {
-  const token = localStorage.getItem("access_token");
+  const { user, loading } = useAuth();
 
-  if (!token) {
+  if (loading) {
+    return <div className="text-center p-4">Checking session...</div>;
+  }
+
+  if (!user) {
     return <Navigate to="/login" replace />;
   }
 
