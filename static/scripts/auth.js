@@ -13,7 +13,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: data,
                 credentials: 'include'
             });
-            handleResponse(res, '/upload_video.html');
+            const result = await res.json();
+            if (res.ok) {
+                localStorage.setItem('access_token', result.access_token);
+                window.location.href = '/upload_video.html';
+            } else {
+                showAlert(result.detail || 'Login failed', 'alert-error');
+            }
         });
     }
 
@@ -26,28 +32,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: data,
                 credentials: 'include'
             });
-            handleResponse(res, '/upload_video.html');
+            const result = await res.json();
+            if (res.ok) {
+                // Optionally login after signup
+                const loginRes = await fetch(`${API}/login`, {
+                    method: 'POST',
+                    body: new URLSearchParams({
+                        username: data.get('username'),
+                        password: data.get('password')
+                    }),
+                    credentials: 'include'
+                });
+                const loginResult = await loginRes.json();
+                if (loginRes.ok) {
+                    localStorage.setItem('access_token', loginResult.access_token);
+                    window.location.href = '/upload_video.html';
+                } else {
+                    showAlert('Signup succeeded, but auto-login failed', 'alert-error');
+                }
+            } else {
+                showAlert(result.detail || 'Signup failed', 'alert-error');
+            }
         });
     }
 });
-
-function handleResponse(res, successRedirect) {
-    res.json().then(data => {
-        if (res.ok) {
-            window.location.href = successRedirect;
-        } else {
-            showAlert(data.detail || data.message || 'Error occurred', 'alert-error');
-        }
-    }).catch(() => {
-        showAlert('Unexpected error occurred', 'alert-error');
-    });
-}
-
-function logout() {
-    fetch(`${API}/logout`, { method: 'POST', credentials: 'include' }).then(() => {
-        window.location.href = '/index.html';
-    });
-}
 
 function showAlert(msg, className) {
     const alert = document.getElementById('alert');
