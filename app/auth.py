@@ -11,6 +11,29 @@ import uuid
 
 router = APIRouter()
 
+# Must be defined before using it in dependencies
+def get_current_user(
+    authorization: Optional[str] = Header(None),
+    db: Session = Depends(get_db)
+) -> User:
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Invalid or missing token")
+
+    token = authorization.split(" ")[1]
+    session = db.query(UserSession).filter(
+        UserSession.session_token == token,
+        UserSession.expires_at > datetime.utcnow()
+    ).first()
+
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid or expired session")
+
+    user = db.query(User).filter(User.id == session.user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return user
+
 
 @router.post("/signup")
 def signup(
@@ -103,26 +126,3 @@ def get_user(username: str, db: Session = Depends(get_db)):
         "username": user.username,
         "public_key": base64.b64encode(user.public_key).decode("utf-8") if user.public_key else None
     }
-
-
-def get_current_user(
-    authorization: Optional[str] = Header(None),
-    db: Session = Depends(get_db)
-) -> User:
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Invalid or missing token")
-
-    token = authorization.split(" ")[1]
-    session = db.query(UserSession).filter(
-        UserSession.session_token == token,
-        UserSession.expires_at > datetime.utcnow()
-    ).first()
-
-    if not session:
-        raise HTTPException(status_code=401, detail="Invalid or expired session")
-
-    user = db.query(User).filter(User.id == session.user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    return user
