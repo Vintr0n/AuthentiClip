@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: data,
                 credentials: 'include'
             });
-            handleResponse(res, 'upload_video.html');
+            handleResponse(res, '/upload_video.html');
         });
     }
 
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: data,
                 credentials: 'include'
             });
-            handleResponse(res, 'upload_video.html');
+            handleResponse(res, '/upload_video.html');
         });
     }
 });
@@ -36,15 +36,16 @@ function handleResponse(res, successRedirect) {
         if (res.ok) {
             window.location.href = successRedirect;
         } else {
-            showAlert(data.message || 'Error occurred', 'alert-error');
+            showAlert(data.detail || data.message || 'Error occurred', 'alert-error');
         }
+    }).catch(() => {
+        showAlert('Unexpected error occurred', 'alert-error');
     });
 }
 
 function logout() {
     fetch(`${API}/logout`, { method: 'POST', credentials: 'include' }).then(() => {
-        document.cookie = 'session=; Max-Age=0';
-        window.location.href = 'index.html';
+        window.location.href = '/index.html';
     });
 }
 
@@ -52,4 +53,5 @@ function showAlert(msg, className) {
     const alert = document.getElementById('alert');
     alert.textContent = msg;
     alert.className = `alert ${className}`;
+    alert.classList.remove('hidden');
 }
