@@ -69,14 +69,21 @@ async def upload_video(
 
 @router.post("/verify")
 async def verify_video(
-    current_user: User = Depends(get_current_user),
+    username: str = Form(...),
     video_file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user),  # Still required for auth
     db: Session = Depends(get_db)
 ):
-    if not current_user.public_key:
+    # Lookup user to verify against
+    target_user = db.query(User).filter(User.username == username).first()
+
+    if not target_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if not target_user.public_key:
         raise HTTPException(status_code=400, detail="User does not have a public key on file")
 
-    public_key_bytes = current_user.public_key
+    public_key_bytes = target_user.public_key
 
     with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp:
         tmp.write(await video_file.read())
@@ -87,13 +94,13 @@ async def verify_video(
     finally:
         os.remove(tmp_path)
 
-    # Get all bundles for this user
+    # Check all signed bundles for the target user
     bundles = db.query(SignedBundle).filter(
-        SignedBundle.user_id == current_user.id
+        SignedBundle.user_id == target_user.id
     ).all()
 
     if not bundles:
-        raise HTTPException(status_code=404, detail="No signed bundles found")
+        raise HTTPException(status_code=404, detail="No signed bundles found for this user")
 
     for bundle in bundles:
         payload_str = bundle.payload
@@ -104,16 +111,16 @@ async def verify_video(
         )
 
         if not verified:
-            continue  # Try next bundle
+            continue
 
         payload = json.loads(payload_str)
         signed_hashes = payload["hashes"]
         match_count = sum(1 for h in uploaded_hashes if h in signed_hashes)
         match_percent = match_count / max(len(uploaded_hashes), 1)
 
-        if match_percent >= 0.8:
+        if match_percent >= 0.7:
             return {
-                "username": current_user.username,
+                "username": target_user.username,
                 "match_count": match_count,
                 "total_uploaded_hashes": len(uploaded_hashes),
                 "match_percentage": round(match_percent * 100, 2),
@@ -121,7 +128,7 @@ async def verify_video(
             }
 
     return {
-        "username": current_user.username,
+        "username": target_user.username,
         "match_count": 0,
         "total_uploaded_hashes": len(uploaded_hashes),
         "match_percentage": 0.0,
