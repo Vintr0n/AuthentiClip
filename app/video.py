@@ -87,33 +87,44 @@ async def verify_video(
     finally:
         os.remove(tmp_path)
 
-    bundle = db.query(SignedBundle).filter(
+    # Get all bundles for this user
+    bundles = db.query(SignedBundle).filter(
         SignedBundle.user_id == current_user.id
-    ).order_by(SignedBundle.id.desc()).first()
+    ).all()
 
-    if not bundle:
-        raise HTTPException(status_code=404, detail="No signed bundle found")
+    if not bundles:
+        raise HTTPException(status_code=404, detail="No signed bundles found")
 
-    payload_str = bundle.payload
-    digest = hashlib.sha256(payload_str.encode("utf-8")).digest()
+    for bundle in bundles:
+        payload_str = bundle.payload
+        digest = hashlib.sha256(payload_str.encode("utf-8")).digest()
 
-    verified = await run_in_threadpool(
-        verify_signature, digest, bundle.signature, public_key_bytes
-    )
+        verified = await run_in_threadpool(
+            verify_signature, digest, bundle.signature, public_key_bytes
+        )
 
-    if not verified:
-        raise HTTPException(status_code=400, detail="Signature verification failed")
+        if not verified:
+            continue  # Try next bundle
 
-    payload = json.loads(payload_str)
-    signed_hashes = payload["hashes"]
+        payload = json.loads(payload_str)
+        signed_hashes = payload["hashes"]
+        match_count = sum(1 for h in uploaded_hashes if h in signed_hashes)
+        match_percent = match_count / max(len(uploaded_hashes), 1)
 
-    match_count = sum(1 for h in uploaded_hashes if h in signed_hashes)
-    match_percent = match_count / max(len(uploaded_hashes), 1)
+        if match_percent >= 0.8:
+            return {
+                "username": current_user.username,
+                "match_count": match_count,
+                "total_uploaded_hashes": len(uploaded_hashes),
+                "match_percentage": round(match_percent * 100, 2),
+                "verified": True
+            }
 
     return {
         "username": current_user.username,
-        "match_count": match_count,
+        "match_count": 0,
         "total_uploaded_hashes": len(uploaded_hashes),
-        "match_percentage": round(match_percent * 100, 2),
-        "verified": match_percent >= 0.8
+        "match_percentage": 0.0,
+        "verified": False
     }
+
