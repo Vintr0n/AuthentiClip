@@ -5,26 +5,25 @@ export default function Header() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-const handleLogout = async () => {
-  const token = localStorage.getItem("access_token");
-  await fetch("https://video-auth-serverside.onrender.com/auth/logout", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const handleLogout = async () => {
+    const token = localStorage.getItem("access_token");
+    await fetch("https://video-auth-serverside.onrender.com/auth/logout", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-  localStorage.removeItem("access_token");
-  window.location.href = "/login";
-};
-
+    localStorage.removeItem("access_token");
+    logout();  // optional to clear context state
+    navigate("/login");
+  };
 
   return (
     <nav className="bg-white shadow p-4 mb-6">
       <ul className="flex space-x-4 items-center">
         <li><Link to="/about" className="hover:underline">About</Link></li>
         <li><Link to="/faq" className="hover:underline">FAQ</Link></li>
-
         {user ? (
           <>
             <li><Link to="/upload" className="hover:underline">Upload</Link></li>
@@ -41,7 +40,7 @@ const handleLogout = async () => {
           </>
         ) : (
           <>
-            <li><Link to="/login" className="hover:underline">Login</Link></li>
+            <li className="ml-auto"><Link to="/login" className="hover:underline">Login</Link></li>
             <li><Link to="/signup" className="hover:underline">Signup</Link></li>
           </>
         )}
