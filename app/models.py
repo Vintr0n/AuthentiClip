@@ -2,6 +2,7 @@
 from sqlalchemy import Column, Integer, LargeBinary, ForeignKey, String, Text, DateTime
 from sqlalchemy.orm import relationship
 from app.database import Base
+from uuid import uuid4
 from datetime import datetime
 
 
