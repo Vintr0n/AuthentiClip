@@ -9,30 +9,31 @@ export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError(null);
+const handleLogin = async (e) => {
+  e.preventDefault();
+  setError(null);
 
-    try {
-      const response = await fetch('https://video-auth-serverside.onrender.com/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          username: email,
-          password: password,
-        }),
-      });
+  try {
+    const response = await fetch('https://video-auth-serverside.onrender.com/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        username: email,
+        password: password,
+      }),
+    });
 
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.detail || 'Login failed');
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.detail || 'Login failed');
 
-      localStorage.setItem('access_token', data.access_token);
-      login(email);
-      navigate('/upload');
-    } catch (err) {
-      setError(err.message);
-    }
-  };
+    localStorage.setItem('access_token', data.access_token);
+    login(email);
+    navigate('/upload');
+  } catch (err) {
+    setError(err.message);
+  }
+};
+
 
   return (
     <div className="flex items-center justify-center min-h-screen overflow-hidden">
