@@ -27,7 +27,7 @@ const handleLogin = async (e) => {
     if (!response.ok) throw new Error(data.detail || 'Login failed');
 
     localStorage.setItem('access_token', data.access_token);
-    refreshAuth();
+    await refreshAuth();
     navigate('/upload');
   } catch (err) {
     setError(err.message);
