@@ -5,11 +5,13 @@ export default function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
     setError(null);
+    setLoading(true);
 
     try {
       const response = await fetch('https://video-auth-serverside.onrender.com/auth/signup', {
@@ -27,6 +29,8 @@ export default function Signup() {
       navigate('/login');
     } catch (err) {
       setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -59,10 +63,17 @@ export default function Signup() {
 
             <button
               type="submit"
+              disabled={loading}
               className="w-full py-3 rounded-full bg-gradient-to-r from-sky-500 to-cyan-400 text-white font-semibold hover:opacity-90 transition"
             >
-              SIGN UP
+              {loading ? 'Signing up...' : 'SIGN UP'}
             </button>
+
+            {loading && (
+              <div className="flex justify-center mt-4">
+                <div className="w-6 h-6 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            )}
           </div>
 
           <p className="text-sm text-center text-gray-300 mt-6">

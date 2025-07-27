@@ -6,34 +6,37 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const { refreshAuth } = useAuth();
   const navigate = useNavigate();
 
-const handleLogin = async (e) => {
-  e.preventDefault();
-  setError(null);
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
 
-  try {
-    const response = await fetch('https://video-auth-serverside.onrender.com/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        username: email,
-        password: password,
-      }),
-    });
+    try {
+      const response = await fetch('https://video-auth-serverside.onrender.com/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          username: email,
+          password: password,
+        }),
+      });
 
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.detail || 'Login failed');
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.detail || 'Login failed');
 
-    localStorage.setItem('access_token', data.access_token);
-    await refreshAuth();
-    navigate('/upload');
-  } catch (err) {
-    setError(err.message);
-  }
-};
-
+      localStorage.setItem('access_token', data.access_token);
+      await refreshAuth();
+      navigate('/upload');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen overflow-hidden">
@@ -64,10 +67,17 @@ const handleLogin = async (e) => {
 
             <button
               type="submit"
+              disabled={loading}
               className="w-full py-3 rounded-full bg-gradient-to-r from-sky-500 to-cyan-400 text-white font-semibold hover:opacity-90 transition"
             >
-              LOGIN
+              {loading ? 'Logging in...' : 'LOGIN'}
             </button>
+
+            {loading && (
+              <div className="flex justify-center mt-4">
+                <div className="w-6 h-6 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            )}
           </div>
 
           <p className="text-sm text-center text-gray-300 mt-6">
