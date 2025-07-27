@@ -147,6 +147,7 @@ def get_upload_history(current_user: User = Depends(get_current_user), db: Sessi
     return [
         {
             "filename": h.filename,
-            "timestamp": h.timestamp.strftime("%d-%m-%Y %H:%M")
+            "timestamp": h.timestamp.strftime("%d-%m-%Y %H:%M"),
+            "guid": h.guid
         } for h in history
     ]
