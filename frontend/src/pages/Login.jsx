@@ -67,12 +67,13 @@ export default function Login() {
 
         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
-        <button
-          type="submit"
-          className="w-full h-12 rounded-full bg-primary hover:bg-accent transition-colors text-white uppercase font-montserrat font-semibold tracking-wide"
-        >
-          Login
-        </button>
+<button
+  type="submit"
+  className="w-full py-3 mt-2 rounded-full bg-blue-700 hover:bg-blue-800 text-white font-semibold transition"
+>
+  Login
+</button>
+
       </form>
 
       <div className="text-center text-white text-sm mt-4">
