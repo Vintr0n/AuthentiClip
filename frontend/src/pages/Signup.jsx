@@ -1,77 +1,78 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
+const Spinner = () => (
+  <div className="flex justify-center items-center mt-4">
+    <div className="w-5 h-5 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+  </div>
+);
 
 export default function Signup() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({ username: '', password: '' });
+  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSignup = async (e) => {
+  const handleChange = e =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const handleSubmit = async e => {
     e.preventDefault();
-    setError(null);
+    setLoading(true);
+    setMessage('');
 
     try {
-      const response = await fetch('https://video-auth-serverside.onrender.com/auth/signup', {
+      const res = await fetch('https://video-auth-serverside.onrender.com/auth/signup', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          username: email,
-          password: password,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.detail || 'Signup failed');
-
-      navigate('/login');
+      if (res.ok) {
+        setMessage('Signup successful! Redirecting to login...');
+        setTimeout(() => navigate('/login'), 2000);
+      } else {
+        const error = await res.text();
+        setMessage(`Signup failed: ${error}`);
+      }
     } catch (err) {
-      setError(err.message);
+      setMessage('Signup failed: ' + err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen overflow-hidden">
       <div className="w-full max-w-md bg-[#0e131f] border border-slate-700 p-8 rounded-xl shadow-lg text-white">
-        <form onSubmit={handleSignup} className="flex flex-col justify-between h-[520px]">
-          <div>
-            <h2 className="text-2xl font-bold mb-6 text-center">Create an Account</h2>
-
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full px-4 py-3 mb-4 border border-gray-600 rounded-full bg-black text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full px-4 py-3 mb-6 border border-gray-600 rounded-full bg-black text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-
-            {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
-
-            <button
-              type="submit"
-              className="w-full py-3 rounded-full bg-gradient-to-r from-sky-500 to-cyan-400 text-white font-semibold hover:opacity-90 transition"
-            >
-              SIGN UP
-            </button>
-          </div>
-
-          <p className="text-sm text-center text-gray-300 mt-6">
-            Already have an account?{' '}
-            <Link to="/login" className="underline hover:text-cyan-300">
-              Login
-            </Link>
-          </p>
+        <h2 className="text-2xl font-bold mb-6 text-center">Sign Up</h2>
+        <form onSubmit={handleSubmit}>
+          <input
+            name="username"
+            type="text"
+            placeholder="Email"
+            value={formData.username}
+            onChange={handleChange}
+            className="w-full mb-4 px-4 py-2 rounded bg-black border border-gray-700 text-white"
+          />
+          <input
+            name="password"
+            type="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+            className="w-full mb-4 px-4 py-2 rounded bg-black border border-gray-700 text-white"
+          />
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-2 rounded-full bg-gradient-to-r from-sky-500 to-cyan-400 text-white font-bold hover:opacity-90 transition disabled:opacity-50"
+          >
+            {loading ? 'Signing up...' : 'Sign Up'}
+          </button>
+          {loading && <Spinner />}
         </form>
+        {message && <p className="mt-4 text-sm text-red-400">{message}</p>}
       </div>
     </div>
   );
