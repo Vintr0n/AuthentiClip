@@ -31,49 +31,48 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-black px-4">
-      <form
-        onSubmit={handleSignup}
-        className="w-full max-w-md h-[520px] bg-gray-900/80 rounded-xl p-8 shadow-lg text-white flex flex-col justify-between"
-      >
-        <div>
-          <h2 className="text-2xl font-bold mb-6 text-center">Create an Account</h2>
+    <div className="flex items-center justify-center min-h-screen overflow-hidden">
+      <div className="w-full max-w-md bg-[#0e131f] border border-slate-700 p-8 rounded-xl shadow-lg text-white">
+        <form onSubmit={handleSignup} className="flex flex-col justify-between h-[520px]">
+          <div>
+            <h2 className="text-2xl font-bold mb-6 text-center">Create an Account</h2>
 
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full px-4 py-3 mb-4 border border-gray-600 rounded-full bg-black text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-          />
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full px-4 py-3 mb-4 border border-gray-600 rounded-full bg-black text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="w-full px-4 py-3 mb-6 border border-gray-600 rounded-full bg-black text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-          />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full px-4 py-3 mb-6 border border-gray-600 rounded-full bg-black text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
 
-          {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
+            {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
 
-          <button
-            type="submit"
-            className="w-full py-3 rounded-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold transition"
-          >
-            SIGN UP
-          </button>
-        </div>
+            <button
+              type="submit"
+              className="w-full py-3 rounded-full bg-gradient-to-r from-sky-500 to-cyan-400 text-white font-semibold hover:opacity-90 transition"
+            >
+              SIGN UP
+            </button>
+          </div>
 
-        <p className="text-sm text-center text-gray-300">
-          Already have an account?{' '}
-          <Link to="/login" className="underline hover:text-yellow-400">
-            Login
-          </Link>
-        </p>
-      </form>
+          <p className="text-sm text-center text-gray-300 mt-6">
+            Already have an account?{' '}
+            <Link to="/login" className="underline hover:text-cyan-300">
+              Login
+            </Link>
+          </p>
+        </form>
+      </div>
     </div>
   );
 }
