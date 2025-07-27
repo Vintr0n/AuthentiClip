@@ -35,7 +35,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0e131f] flex items-center justify-center overflow-hidden">
+    <div className="flex items-center justify-center min-h-screen overflow-hidden">
       <div className="w-full max-w-md bg-[#0e131f] border border-slate-700 p-8 rounded-xl shadow-lg text-white">
         <form onSubmit={handleLogin} className="flex flex-col justify-between h-[520px]">
           <div>
