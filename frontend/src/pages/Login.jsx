@@ -40,74 +40,64 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-300 to-blue-600 flex items-center justify-center px-4">
-      <div className="bg-black rounded-xl shadow-2xl flex flex-col md:flex-row overflow-hidden max-w-4xl w-full">
-        {/* Left Image Panel */}
-        <div className="hidden md:flex w-1/2 items-center justify-center p-6">
-          <img src="/login-img.png" alt="Login visual" className="max-w-xs" />
-        </div>
+    <div className="w-full max-w-md bg-black rounded-xl p-8 shadow-lg text-white">
+      <h2 className="text-3xl font-montserrat font-bold text-center mb-8">
+        Welcome Back
+      </h2>
 
-        {/* Form Panel */}
-        <div className="w-full md:w-1/2 p-10">
-          <h2 className="text-white text-3xl font-montserrat font-bold text-center mb-8">
-            Welcome Back
-          </h2>
-
-          <form onSubmit={handleLogin} className="space-y-6">
-            <div className="relative">
-              <input
-                type="email"
-                placeholder="Email"
-                className="w-full h-12 pl-12 pr-4 rounded-full bg-black text-white placeholder-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-accent"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-              <div className="absolute top-1/2 left-4 transform -translate-y-1/2 text-white">
-                <i className="fa fa-envelope"></i>
-              </div>
-            </div>
-
-            <div className="relative">
-              <input
-                type="password"
-                placeholder="Password"
-                className="w-full h-12 pl-12 pr-4 rounded-full bg-black text-white placeholder-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-accent"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-              <div className="absolute top-1/2 left-4 transform -translate-y-1/2 text-white">
-                <i className="fa fa-lock"></i>
-              </div>
-            </div>
-
-            {error && (
-              <p className="text-red-500 text-sm text-center">{error}</p>
-            )}
-
-            <button
-              type="submit"
-              className="w-full h-12 rounded-full bg-primary hover:bg-accent transition-colors text-white uppercase font-montserrat font-semibold tracking-wide"
-            >
-              Login
-            </button>
-          </form>
-
-          <div className="text-center text-white text-sm mt-6">
-            Forgot your password? <span className="underline cursor-pointer">Recover</span>
-          </div>
-
-          <div className="text-center text-white text-sm mt-2">
-            Don’t have an account?{' '}
-            <span
-              className="underline cursor-pointer"
-              onClick={() => navigate('/signup')}
-            >
-              Sign up
-            </span>
+      <form onSubmit={handleLogin} className="space-y-6">
+        <div className="relative">
+          <input
+            type="email"
+            placeholder="Email"
+            className="w-full h-12 pl-12 pr-4 rounded-full bg-black text-white placeholder-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-accent"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <div className="absolute top-1/2 left-4 transform -translate-y-1/2 text-white">
+            <i className="fa fa-envelope"></i>
           </div>
         </div>
+
+        <div className="relative">
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full h-12 pl-12 pr-4 rounded-full bg-black text-white placeholder-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-accent"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <div className="absolute top-1/2 left-4 transform -translate-y-1/2 text-white">
+            <i className="fa fa-lock"></i>
+          </div>
+        </div>
+
+        {error && (
+          <p className="text-red-500 text-sm text-center">{error}</p>
+        )}
+
+        <button
+          type="submit"
+          className="w-full h-12 rounded-full bg-primary hover:bg-accent transition-colors text-white uppercase font-montserrat font-semibold tracking-wide"
+        >
+          Login
+        </button>
+      </form>
+
+      <div className="text-center text-white text-sm mt-6">
+        Forgot your password? <span className="underline cursor-pointer">Recover</span>
+      </div>
+
+      <div className="text-center text-white text-sm mt-2">
+        Don’t have an account?{' '}
+        <span
+          className="underline cursor-pointer"
+          onClick={() => navigate('/signup')}
+        >
+          Sign up
+        </span>
       </div>
     </div>
   );

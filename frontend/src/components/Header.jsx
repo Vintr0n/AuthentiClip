@@ -25,16 +25,15 @@ export default function Header() {
     }`;
 
   return (
-    <header className="bg-black text-white py-4 shadow-md">
-      <div className="container mx-auto flex flex-col items-center justify-center">
-        {/* Logo */}
-        <div className="flex items-center space-x-2 mb-3">
-          <img src="/logo.png" alt="Logo" className="w-6 h-6" />
-          <h1 className="text-xl font-bold font-montserrat">Tokenix</h1>
-        </div>
+    <header className="relative z-10 py-4">
+      {/* Logo */}
+      <div className="absolute top-4 left-4">
+        <img src="/logo.png" alt="Logo" className="w-10 h-10" />
+      </div>
 
-        {/* Rounded Nav Container */}
-        <nav className="bg-gray-800/70 backdrop-blur-md px-4 py-2 rounded-full flex space-x-4">
+      {/* Centered Nav */}
+      <div className="flex justify-center">
+        <nav className="bg-gray-800/70 backdrop-blur-md px-6 py-2 rounded-full flex space-x-4 shadow-lg">
           <NavLink to="/about" className={navLinkClass}>
             About
           </NavLink>

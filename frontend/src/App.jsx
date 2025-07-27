@@ -1,52 +1,48 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './components/AuthContext';
+import RequireAuth from './components/RequireAuth';
 import Header from './components/Header';
-import UploadVideo from './pages/UploadVideo';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import Verify from './pages/Verify';
+
 import About from './pages/About';
 import FAQ from './pages/FAQ';
-import RequireAuth from './components/RequireAuth';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import UploadVideo from './pages/UploadVideo';
+import Verify from './pages/Verify';
 
-function App() {
+export default function App() {
   return (
-    <div>
-      <Header />
-      <div className="p-4">
-        <Routes>
-          {/* Redirect root to login */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
-
-          {/* Public routes */}
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/faq" element={<FAQ />} />
-
-          {/* Protected routes */}
-          <Route
-            path="/upload"
-            element={
-              <RequireAuth>
-                <UploadVideo />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/verify"
-            element={
-              <RequireAuth>
-                <Verify />
-              </RequireAuth>
-            }
-          />
-
-          {/* Catch-all */}
-          <Route path="*" element={<div>404 Not Found</div>} />
-        </Routes>
-      </div>
-    </div>
+    <AuthProvider>
+      <Router>
+        <div className="min-h-screen bg-gradient-to-br from-sky-300 to-blue-600 overflow-hidden">
+          <Header />
+          <main className="flex justify-center items-center h-[calc(100vh-100px)] px-4">
+            <Routes>
+              <Route path="/" element={<Navigate to="/login" replace />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/faq" element={<FAQ />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route
+                path="/upload"
+                element={
+                  <RequireAuth>
+                    <UploadVideo />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/verify"
+                element={
+                  <RequireAuth>
+                    <Verify />
+                  </RequireAuth>
+                }
+              />
+            </Routes>
+          </main>
+        </div>
+      </Router>
+    </AuthProvider>
   );
 }
-
-export default App;
