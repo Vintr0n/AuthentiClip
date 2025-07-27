@@ -70,7 +70,7 @@ export default function Login() {
               disabled={loading}
               className="w-full py-3 rounded-full bg-gradient-to-r from-sky-500 to-cyan-400 text-white font-semibold hover:opacity-90 transition"
             >
-              {loading ? 'Logging in...' : 'LOGIN'}
+              {loading ? 'Logging in...' : 'Login'}
             </button>
 
             {loading && (
