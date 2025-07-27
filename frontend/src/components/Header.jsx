@@ -32,12 +32,16 @@ export default function Header() {
       {/* Nav Menu (centered) */}
       <div className="w-full flex justify-center">
         <nav className="bg-gray-800/70 backdrop-blur-md px-6 py-2 rounded-full flex space-x-4 shadow-lg">
-          <NavLink to="/login" className={navLinkClass}>
-            Login
-          </NavLink>
-          <NavLink to="/signup" className={navLinkClass}>
-            Signup
-          </NavLink>
+          {!user && (
+            <>
+              <NavLink to="/login" className={navLinkClass}>
+                Login
+              </NavLink>
+              <NavLink to="/signup" className={navLinkClass}>
+                Signup
+              </NavLink>
+            </>
+          )}
           <NavLink to="/about" className={navLinkClass}>
             About
           </NavLink>
