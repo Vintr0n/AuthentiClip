@@ -1,79 +1,96 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Signup() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    setMessage("");
-
-    if (!username.includes("@")) {
-      setMessage("Username must be a valid email address.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("username", username);
-    formData.append("password", password);
+    setError(null);
 
     try {
-      const res = await fetch("https://video-auth-serverside.onrender.com/auth/signup", {
-        method: "POST",
-        body: formData,
+      const response = await fetch('https://video-auth-serverside.onrender.com/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
       });
 
-      const data = await res.json();
+      const data = await response.json();
 
-      if (!res.ok) {
-        const msg = Array.isArray(data.detail)
-          ? data.detail.map((d) => d.msg).join(", ")
-          : data.detail || "Signup failed";
-        throw new Error(msg);
+      if (!response.ok) {
+        throw new Error(data.detail || 'Signup failed');
       }
 
-      setMessage("Signup successful! Redirecting...");
-      setTimeout(() => navigate("/login"), 1500);
+      navigate('/login');
     } catch (err) {
-      setMessage(err.message);
+      setError(err.message);
     }
   };
 
   return (
-    <div className="p-6 max-w-md mx-auto bg-gray-100 rounded shadow">
-      <h2 className="text-2xl font-semibold mb-4">Signup</h2>
-      <form onSubmit={handleSignup} className="space-y-4">
-        <div>
+    <div className="w-full max-w-md bg-black rounded-xl p-8 shadow-lg text-white">
+      <h2 className="text-3xl font-montserrat font-bold text-center mb-8">
+        Create Account
+      </h2>
+
+      <form onSubmit={handleSignup} className="space-y-6">
+        <div className="relative">
           <input
             type="email"
             placeholder="Email"
-            className="w-full px-4 py-2 border rounded"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            className="w-full h-12 pl-12 pr-4 rounded-full bg-black text-white placeholder-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-accent"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
+          <div className="absolute top-1/2 left-4 transform -translate-y-1/2 text-white">
+            <i className="fa fa-envelope"></i>
+          </div>
         </div>
-        <div>
+
+        <div className="relative">
           <input
             type="password"
             placeholder="Password"
-            className="w-full px-4 py-2 border rounded"
+            className="w-full h-12 pl-12 pr-4 rounded-full bg-black text-white placeholder-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-accent"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+          <div className="absolute top-1/2 left-4 transform -translate-y-1/2 text-white">
+            <i className="fa fa-lock"></i>
+          </div>
         </div>
+
+        {error && (
+          <p className="text-red-500 text-sm text-center">{error}</p>
+        )}
+
         <button
           type="submit"
-          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+          className="w-full h-12 rounded-full bg-primary hover:bg-accent transition-colors text-white uppercase font-montserrat font-semibold tracking-wide"
         >
           Sign Up
         </button>
       </form>
-      {message && <p className="mt-4 text-red-600">{message}</p>}
+
+      <div className="text-center text-white text-sm mt-6">
+        Already have an account?{' '}
+        <span
+          className="underline cursor-pointer"
+          onClick={() => navigate('/login')}
+        >
+          Login
+        </span>
+      </div>
     </div>
   );
 }
