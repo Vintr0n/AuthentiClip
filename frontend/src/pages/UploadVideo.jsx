@@ -105,6 +105,7 @@ export default function UploadVideo() {
                 <tr className="text-left border-b border-slate-600">
                   <th className="pb-1">Filename</th>
                   <th className="pb-1">Uploaded At</th>
+			<th className="pb-1">GUID</th>
                 </tr>
               </thead>
               <tbody>
@@ -112,6 +113,7 @@ export default function UploadVideo() {
                   <tr key={index} className="border-b border-slate-700">
                     <td className="py-1 pr-2">{item.filename}</td>
                     <td className="py-1">{item.timestamp}</td>
+			<td className="py-1 font-mono text-xs text-slate-400">{item.guid}</td>
                   </tr>
                 ))}
               </tbody>

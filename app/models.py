@@ -49,6 +49,7 @@ class UploadHistory(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     filename = Column(String, nullable=False)
     timestamp = Column(DateTime, default=datetime.utcnow)
+    guid = Column(String, default=lambda: str(uuid4()))
 
     user = relationship("User", back_populates="upload_history")
 
