@@ -9,11 +9,8 @@ export default function Header() {
     const token = localStorage.getItem('access_token');
     await fetch('https://video-auth-serverside.onrender.com/auth/logout', {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     });
-
     localStorage.removeItem('access_token');
     logout();
     navigate('/login');
@@ -29,18 +26,24 @@ export default function Header() {
       {/* Logo and title */}
       <div className="flex items-center space-x-2">
         <img src="/logo.png" alt="Logo" className="w-10 h-10" />
-        <h1 className="text-xl font-bold font-montserrat">ClipCert</h1>
+        <h1 className="text-xl font-bold font-montserrat text-yellow-200">ClipCert</h1>
       </div>
 
-      {/* Centered navigation */}
+      {/* Nav menu */}
       <nav className="bg-gray-800/70 backdrop-blur-md px-6 py-2 rounded-full flex space-x-4 shadow-lg">
+        <NavLink to="/login" className={navLinkClass}>
+          Login
+        </NavLink>
+        <NavLink to="/signup" className={navLinkClass}>
+          Signup
+        </NavLink>
         <NavLink to="/about" className={navLinkClass}>
           About
         </NavLink>
         <NavLink to="/faq" className={navLinkClass}>
           FAQ
         </NavLink>
-        {user ? (
+        {user && (
           <>
             <NavLink to="/upload" className={navLinkClass}>
               Upload
@@ -54,15 +57,6 @@ export default function Header() {
             >
               Logout
             </button>
-          </>
-        ) : (
-          <>
-            <NavLink to="/login" className={navLinkClass}>
-              Login
-            </NavLink>
-            <NavLink to="/signup" className={navLinkClass}>
-              Signup
-            </NavLink>
           </>
         )}
       </nav>

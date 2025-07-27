@@ -12,22 +12,14 @@ export default function Signup() {
     setError(null);
 
     try {
-      const response = await fetch('https://video-auth-serverside.onrender.com/auth/register', {
+      const response = await fetch('https://video-auth-serverside.onrender.com/auth/signup', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email,
-          password: password,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.detail || 'Signup failed');
-      }
+      if (!response.ok) throw new Error(data.detail || 'Signup failed');
 
       navigate('/login');
     } catch (err) {
@@ -36,17 +28,15 @@ export default function Signup() {
   };
 
   return (
-    <div className="w-full max-w-md bg-black rounded-xl p-8 shadow-lg text-white">
-      <h2 className="text-3xl font-montserrat font-bold text-center mb-8">
-        Create Account
-      </h2>
+    <div className="w-full max-w-md h-[520px] bg-gray-800/70 backdrop-blur-md rounded-xl p-8 shadow-lg text-white flex flex-col justify-between">
+      <h2 className="text-3xl font-montserrat font-bold text-center mb-4">Create Account</h2>
 
-      <form onSubmit={handleSignup} className="space-y-6">
+      <form onSubmit={handleSignup} className="space-y-6 flex-grow">
         <div className="relative">
           <input
             type="email"
             placeholder="Email"
-            className="w-full h-12 pl-12 pr-4 rounded-full bg-black text-white placeholder-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-accent"
+            className="w-full h-12 pl-12 pr-4 rounded-full bg-black/70 text-white placeholder-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-accent"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -60,7 +50,7 @@ export default function Signup() {
           <input
             type="password"
             placeholder="Password"
-            className="w-full h-12 pl-12 pr-4 rounded-full bg-black text-white placeholder-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-accent"
+            className="w-full h-12 pl-12 pr-4 rounded-full bg-black/70 text-white placeholder-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-accent"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -70,9 +60,7 @@ export default function Signup() {
           </div>
         </div>
 
-        {error && (
-          <p className="text-red-500 text-sm text-center">{error}</p>
-        )}
+        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
         <button
           type="submit"
@@ -82,12 +70,9 @@ export default function Signup() {
         </button>
       </form>
 
-      <div className="text-center text-white text-sm mt-6">
+      <div className="text-center text-white text-sm mt-4">
         Already have an account?{' '}
-        <span
-          className="underline cursor-pointer"
-          onClick={() => navigate('/login')}
-        >
+        <span className="underline cursor-pointer" onClick={() => navigate('/login')}>
           Login
         </span>
       </div>

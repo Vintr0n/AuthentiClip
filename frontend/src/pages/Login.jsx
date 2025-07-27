@@ -16,20 +16,12 @@ export default function Login() {
     try {
       const response = await fetch('https://video-auth-serverside.onrender.com/auth/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-          username: email,
-          password: password,
-        }),
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ username: email, password }),
       });
 
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.detail || 'Login failed');
-      }
+      if (!response.ok) throw new Error(data.detail || 'Login failed');
 
       localStorage.setItem('access_token', data.access_token);
       refreshAuth();
@@ -40,17 +32,15 @@ export default function Login() {
   };
 
   return (
-    <div className="w-full max-w-md bg-black rounded-xl p-8 shadow-lg text-white">
-      <h2 className="text-3xl font-montserrat font-bold text-center mb-8">
-        Welcome Back
-      </h2>
+    <div className="w-full max-w-md h-[520px] bg-gray-800/70 backdrop-blur-md rounded-xl p-8 shadow-lg text-white flex flex-col justify-between">
+      <h2 className="text-3xl font-montserrat font-bold text-center mb-4">Welcome Back</h2>
 
-      <form onSubmit={handleLogin} className="space-y-6">
+      <form onSubmit={handleLogin} className="space-y-6 flex-grow">
         <div className="relative">
           <input
             type="email"
             placeholder="Email"
-            className="w-full h-12 pl-12 pr-4 rounded-full bg-black text-white placeholder-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-accent"
+            className="w-full h-12 pl-12 pr-4 rounded-full bg-black/70 text-white placeholder-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-accent"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -64,7 +54,7 @@ export default function Login() {
           <input
             type="password"
             placeholder="Password"
-            className="w-full h-12 pl-12 pr-4 rounded-full bg-black text-white placeholder-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-accent"
+            className="w-full h-12 pl-12 pr-4 rounded-full bg-black/70 text-white placeholder-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-accent"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -74,9 +64,7 @@ export default function Login() {
           </div>
         </div>
 
-        {error && (
-          <p className="text-red-500 text-sm text-center">{error}</p>
-        )}
+        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
         <button
           type="submit"
@@ -86,16 +74,9 @@ export default function Login() {
         </button>
       </form>
 
-      <div className="text-center text-white text-sm mt-6">
-        Forgot your password? <span className="underline cursor-pointer">Recover</span>
-      </div>
-
-      <div className="text-center text-white text-sm mt-2">
+      <div className="text-center text-white text-sm mt-4">
         Don’t have an account?{' '}
-        <span
-          className="underline cursor-pointer"
-          onClick={() => navigate('/signup')}
-        >
+        <span className="underline cursor-pointer" onClick={() => navigate('/signup')}>
           Sign up
         </span>
       </div>
