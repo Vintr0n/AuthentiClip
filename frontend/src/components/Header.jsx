@@ -22,47 +22,57 @@ export default function Header() {
     }`;
 
   return (
-    <header className="w-full px-6 py-4 flex flex-col items-center justify-center">
-  <div className="w-full max-w-6xl flex justify-between items-center">
-    {/* Logo */}
-    <div className="flex items-center space-x-2">
-      <img src="/logo.png" alt="Logo" className="w-10 h-10" />
-      <h1 className="text-xl font-bold font-montserrat text-white">ClipCert</h1>
-    </div>
+    <header className="relative w-full px-6 py-4 flex items-center justify-between">
+      {/* Logo (left aligned) */}
+      <div className="flex items-center space-x-2 absolute left-6 top-1/2 transform -translate-y-1/2">
+        <img src="/logo.png" alt="Logo" className="w-10 h-10" />
+        <h1 className="text-xl font-bold font-montserrat text-yellow-200">ClipCert</h1>
+      </div>
 
-    {/* Centered nav banner */}
-    <nav className="bg-gray-800/70 backdrop-blur-md px-6 py-2 rounded-full flex space-x-4 shadow-lg">
-      <NavLink to="/login" className={navLinkClass}>
-        Login
-      </NavLink>
-      <NavLink to="/signup" className={navLinkClass}>
-        Signup
-      </NavLink>
-      <NavLink to="/about" className={navLinkClass}>
-        About
-      </NavLink>
-      <NavLink to="/faq" className={navLinkClass}>
-        FAQ
-      </NavLink>
-      {user && (
-        <>
-          <NavLink to="/upload" className={navLinkClass}>
-            Upload
+      {/* Nav Menu (centered) */}
+      <div className="w-full flex justify-center">
+        <nav className="bg-gray-800/70 backdrop-blur-md px-6 py-2 rounded-full flex space-x-4 shadow-lg">
+          <NavLink to="/login" className={navLinkClass}>
+            Login
           </NavLink>
-          <NavLink to="/verify" className={navLinkClass}>
-            Verify
+          <NavLink to="/signup" className={navLinkClass}>
+            Signup
           </NavLink>
-          <button
-            onClick={handleLogout}
-            className="px-4 py-2 rounded-full bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition"
-          >
-            Logout
-          </button>
-        </>
-      )}
-    </nav>
-  </div>
-</header>
+          <NavLink to="/about" className={navLinkClass}>
+            About
+          </NavLink>
+          <NavLink to="/faq" className={navLinkClass}>
+            FAQ
+          </NavLink>
+          {user && (
+            <>
+              <NavLink to="/upload" className={navLinkClass}>
+                Upload
+              </NavLink>
+              <NavLink to="/verify" className={navLinkClass}>
+                Verify
+              </NavLink>
+            </>
+          )}
+        </nav>
+      </div>
 
+      {/* Right content (user + logout) */}
+      <div className="absolute right-6 top-1/2 transform -translate-y-1/2 flex items-center space-x-4">
+        {user && (
+          <>
+            <span className="text-sm text-white font-medium hidden sm:inline-block">
+              Hello, {user}
+            </span>
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 rounded-full bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition"
+            >
+              Logout
+            </button>
+          </>
+        )}
+      </div>
+    </header>
   );
 }

@@ -32,7 +32,8 @@ body: new URLSearchParams({
   };
 
   return (
-    <div className="w-full max-w-md h-[520px] bg-black rounded-xl p-8 shadow-lg text-white flex flex-col justify-between">
+	<div className="w-full max-w-md h-[520px] bg-white rounded-xl p-8 shadow-lg text-black flex flex-col justify-between">
+
       <h2 className="text-3xl font-montserrat font-bold text-center mb-4">Create Account</h2>
 
       <form onSubmit={handleSignup} className="space-y-6 flex-grow">
