@@ -54,8 +54,8 @@ export default function Verify() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen overflow-hidden">
-      <div className="w-full max-w-md bg-[#0e131f] border border-slate-700 p-8 rounded-xl shadow-lg text-white">
+      <div className="flex justify-center min-h-screen overflow-y-auto items-start mt-10 px-4">
+        <div className="w-full sm:max-w-xl bg-[#0e131f] border border-slate-700 p-10 rounded-xl shadow-lg text-white">
         <h2 className="text-2xl font-bold mb-6 text-center">Verify Video</h2>
         <form onSubmit={handleSubmit}>
           <input
