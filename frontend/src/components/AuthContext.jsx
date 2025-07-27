@@ -7,7 +7,22 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(localStorage.getItem("access_token"));
 
-  // Run when token changes
+  // Called after login to set the user manually
+  const login = (email) => {
+    setUser({ email });
+    setToken(localStorage.getItem("access_token"));
+  };
+
+  const logout = () => {
+    localStorage.removeItem("access_token");
+    setUser(null);
+    setToken(null);
+  };
+
+  const refreshAuth = () => {
+    setToken(localStorage.getItem("access_token")); // trigger fetchUser
+  };
+
   useEffect(() => {
     async function fetchUser() {
       if (!token) {
@@ -25,8 +40,8 @@ export function AuthProvider({ children }) {
 
         if (!res.ok) throw new Error("Session invalid");
 
-const data = await res.json();
-setUser(data.username || data.email || data);  
+        const data = await res.json();
+        setUser(data.username || data.email || data);
       } catch (err) {
         localStorage.removeItem("access_token");
         setUser(null);
@@ -35,22 +50,12 @@ setUser(data.username || data.email || data);
       }
     }
 
-    setLoading(true); // Reset loading state during re-fetch
+    setLoading(true);
     fetchUser();
   }, [token]);
 
-  const logout = () => {
-    localStorage.removeItem("access_token");
-    setUser(null);
-    setToken(null);
-  };
-
-  const refreshAuth = () => {
-    setToken(localStorage.getItem("access_token")); // trigger fetchUser
-  };
-
   return (
-    <AuthContext.Provider value={{ user, loading, logout, refreshAuth }}>
+    <AuthContext.Provider value={{ user, loading, logout, refreshAuth, login }}>
       {children}
     </AuthContext.Provider>
   );
