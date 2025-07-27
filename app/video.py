@@ -9,7 +9,6 @@ from starlette.concurrency import run_in_threadpool
 from app.models import UploadHistory
 from datetime import datetime
 
-
 import tempfile
 import os
 import json
@@ -77,10 +76,9 @@ async def upload_video(
 async def verify_video(
     username: str = Form(...),
     video_file: UploadFile = File(...),
-    current_user: User = Depends(get_current_user),  # Still required for auth
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    # Lookup user to verify against
     target_user = db.query(User).filter(User.username == username).first()
 
     if not target_user:
@@ -100,13 +98,15 @@ async def verify_video(
     finally:
         os.remove(tmp_path)
 
-    # Check all signed bundles for the target user
     bundles = db.query(SignedBundle).filter(
         SignedBundle.user_id == target_user.id
     ).all()
 
     if not bundles:
         raise HTTPException(status_code=404, detail="No signed bundles found for this user")
+
+    best_match = None
+    highest_score = 0.0
 
     for bundle in bundles:
         payload_str = bundle.payload
@@ -124,14 +124,18 @@ async def verify_video(
         match_count = sum(1 for h in uploaded_hashes if h in signed_hashes)
         match_percent = match_count / max(len(uploaded_hashes), 1)
 
-        if match_percent >= 0.7:
-            return {
+        if match_percent > highest_score:
+            highest_score = match_percent
+            best_match = {
                 "username": target_user.username,
                 "match_count": match_count,
                 "total_uploaded_hashes": len(uploaded_hashes),
                 "match_percentage": round(match_percent * 100, 2),
-                "verified": True
+                "verified": match_percent >= 0.7
             }
+
+    if best_match:
+        return best_match
 
     return {
         "username": target_user.username,
