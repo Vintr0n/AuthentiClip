@@ -2,6 +2,9 @@
 from sqlalchemy import Column, Integer, LargeBinary, ForeignKey, String, Text, DateTime
 from sqlalchemy.orm import relationship
 from app.database import Base
+from datetime import datetime
+
+
 from datetime import datetime, timedelta
 import uuid
 
@@ -37,3 +40,17 @@ class Session(Base):
     expires_at = Column(DateTime, default=lambda: datetime.utcnow() + timedelta(days=7))
 
     user = relationship("User", back_populates="sessions")
+
+
+class UploadHistory(Base):
+    __tablename__ = "upload_history"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    filename = Column(String, nullable=False)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User", back_populates="upload_history")
+
+# Add this to the User model:
+User.upload_history = relationship("UploadHistory", back_populates="user", cascade="all, delete-orphan")

@@ -6,6 +6,7 @@ from app.hash_utils import generate_video_hashes
 from app.crypto_utils import sign_data, verify_signature
 from app.auth import get_current_user
 from starlette.concurrency import run_in_threadpool
+from app.models import UploadHistory
 
 
 import tempfile
@@ -59,6 +60,9 @@ async def upload_video(
         payload=payload_str,
         signature=signature
     ))
+    db.commit()
+    
+    db.add(UploadHistory(user_id=current_user.id, filename=video_file.filename, timestamp=datetime.utcnow()))
     db.commit()
 
     return {
@@ -136,3 +140,12 @@ async def verify_video(
         "verified": False
     }
 
+@router.get("/upload/history")
+def get_upload_history(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    history = db.query(UploadHistory).filter(UploadHistory.user_id == current_user.id).order_by(UploadHistory.timestamp.desc()).all()
+    return [
+        {
+            "filename": h.filename,
+            "timestamp": h.timestamp.strftime("%d-%m-%Y %H:%M")
+        } for h in history
+    ]
