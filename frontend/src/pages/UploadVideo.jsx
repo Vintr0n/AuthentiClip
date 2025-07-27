@@ -68,7 +68,7 @@ export default function UploadVideo() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen overflow-hidden bg-gradient-to-br from-sky-300 to-blue-600">
+<div className="flex items-center justify-center min-h-screen overflow-hidden">
       <div className="w-full max-w-md bg-[#0e131f] border border-slate-700 p-8 rounded-xl shadow-lg text-white">
         <h2 className="text-2xl font-bold mb-6 text-center">Upload Video</h2>
         <form onSubmit={handleSubmit}>
