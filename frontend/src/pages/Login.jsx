@@ -14,7 +14,7 @@ export default function Login() {
     setError(null);
 
     try {
-      const response = await fetch('https://video-auth-serverside.onrender.com/auth/token', {
+      const response = await fetch('https://video-auth-serverside.onrender.com/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
