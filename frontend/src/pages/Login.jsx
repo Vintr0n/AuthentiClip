@@ -6,7 +6,7 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
-  const { login } = useAuth();
+  const { refreshAuth } = useAuth();
   const navigate = useNavigate();
 
 const handleLogin = async (e) => {
@@ -27,7 +27,7 @@ const handleLogin = async (e) => {
     if (!response.ok) throw new Error(data.detail || 'Login failed');
 
     localStorage.setItem('access_token', data.access_token);
-    login(email);
+    refreshAuth();
     navigate('/upload');
   } catch (err) {
     setError(err.message);
