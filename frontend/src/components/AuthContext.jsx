@@ -19,9 +19,11 @@ export function AuthProvider({ children }) {
     setToken(null);
   };
 
-  const refreshAuth = () => {
-    setToken(localStorage.getItem("access_token")); // trigger fetchUser
-  };
+const refreshAuth = async () => {
+  setToken(localStorage.getItem("access_token")); // triggers useEffect
+  return new Promise((resolve) => setTimeout(resolve, 100)); // small wait to let useEffect complete
+};
+
 
   useEffect(() => {
     async function fetchUser() {
