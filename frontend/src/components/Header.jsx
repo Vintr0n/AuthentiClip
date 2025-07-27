@@ -25,48 +25,47 @@ export default function Header() {
     }`;
 
   return (
-    <header className="relative z-10 py-4">
-      {/* Logo */}
-      <div className="absolute top-4 left-4">
+    <header className="w-full px-6 py-4 flex items-center justify-between">
+      {/* Logo and title */}
+      <div className="flex items-center space-x-2">
         <img src="/logo.png" alt="Logo" className="w-10 h-10" />
+        <h1 className="text-xl font-bold font-montserrat">ClipCert</h1>
       </div>
 
-      {/* Centered Nav */}
-      <div className="flex justify-center">
-        <nav className="bg-gray-800/70 backdrop-blur-md px-6 py-2 rounded-full flex space-x-4 shadow-lg">
-          <NavLink to="/about" className={navLinkClass}>
-            About
-          </NavLink>
-          <NavLink to="/faq" className={navLinkClass}>
-            FAQ
-          </NavLink>
-          {user ? (
-            <>
-              <NavLink to="/upload" className={navLinkClass}>
-                Upload
-              </NavLink>
-              <NavLink to="/verify" className={navLinkClass}>
-                Verify
-              </NavLink>
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 rounded-full bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition"
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <NavLink to="/login" className={navLinkClass}>
-                Login
-              </NavLink>
-              <NavLink to="/signup" className={navLinkClass}>
-                Signup
-              </NavLink>
-            </>
-          )}
-        </nav>
-      </div>
+      {/* Centered navigation */}
+      <nav className="bg-gray-800/70 backdrop-blur-md px-6 py-2 rounded-full flex space-x-4 shadow-lg">
+        <NavLink to="/about" className={navLinkClass}>
+          About
+        </NavLink>
+        <NavLink to="/faq" className={navLinkClass}>
+          FAQ
+        </NavLink>
+        {user ? (
+          <>
+            <NavLink to="/upload" className={navLinkClass}>
+              Upload
+            </NavLink>
+            <NavLink to="/verify" className={navLinkClass}>
+              Verify
+            </NavLink>
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 rounded-full bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition"
+            >
+              Logout
+            </button>
+          </>
+        ) : (
+          <>
+            <NavLink to="/login" className={navLinkClass}>
+              Login
+            </NavLink>
+            <NavLink to="/signup" className={navLinkClass}>
+              Signup
+            </NavLink>
+          </>
+        )}
+      </nav>
     </header>
   );
 }

@@ -14,9 +14,9 @@ export default function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="min-h-screen bg-gradient-to-br from-sky-300 to-blue-600 overflow-hidden">
+        <div className="min-h-screen h-screen bg-gradient-to-br from-sky-300 to-blue-600 text-white flex flex-col overflow-hidden">
           <Header />
-          <main className="flex justify-center items-center h-[calc(100vh-100px)] px-4">
+          <main className="flex-grow flex justify-center items-center px-4">
             <Routes>
               <Route path="/" element={<Navigate to="/login" replace />} />
               <Route path="/about" element={<About />} />
