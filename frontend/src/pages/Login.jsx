@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../components/AuthContext'; // Adjust path if needed
+import { useAuth } from '../components/AuthContext';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -31,13 +31,8 @@ export default function Login() {
         throw new Error(data.detail || 'Login failed');
       }
 
-      // Save token
       localStorage.setItem('access_token', data.access_token);
-
-      // Trigger re-authentication in context
       refreshAuth();
-
-      // Redirect to protected route
       navigate('/upload');
     } catch (err) {
       setError(err.message);
@@ -45,30 +40,75 @@ export default function Login() {
   };
 
   return (
-    <div className="max-w-md mx-auto p-4">
-      <h1 className="text-2xl mb-4">Login Page</h1>
-      <form onSubmit={handleLogin} className="space-y-4">
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full p-2 border"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full p-2 border"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
-          Login
-        </button>
-        {error && <p className="text-red-600">{error}</p>}
-      </form>
+    <div className="min-h-screen bg-gradient-to-br from-sky-300 to-blue-600 flex items-center justify-center px-4">
+      <div className="bg-black rounded-xl shadow-2xl flex flex-col md:flex-row overflow-hidden max-w-4xl w-full">
+        {/* Left Image Panel */}
+        <div className="hidden md:flex w-1/2 items-center justify-center p-6">
+          <img src="/login-img.png" alt="Login visual" className="max-w-xs" />
+        </div>
+
+        {/* Form Panel */}
+        <div className="w-full md:w-1/2 p-10">
+          <h2 className="text-white text-3xl font-montserrat font-bold text-center mb-8">
+            Welcome Back
+          </h2>
+
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div className="relative">
+              <input
+                type="email"
+                placeholder="Email"
+                className="w-full h-12 pl-12 pr-4 rounded-full bg-black text-white placeholder-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-accent"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <div className="absolute top-1/2 left-4 transform -translate-y-1/2 text-white">
+                <i className="fa fa-envelope"></i>
+              </div>
+            </div>
+
+            <div className="relative">
+              <input
+                type="password"
+                placeholder="Password"
+                className="w-full h-12 pl-12 pr-4 rounded-full bg-black text-white placeholder-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-accent"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <div className="absolute top-1/2 left-4 transform -translate-y-1/2 text-white">
+                <i className="fa fa-lock"></i>
+              </div>
+            </div>
+
+            {error && (
+              <p className="text-red-500 text-sm text-center">{error}</p>
+            )}
+
+            <button
+              type="submit"
+              className="w-full h-12 rounded-full bg-primary hover:bg-accent transition-colors text-white uppercase font-montserrat font-semibold tracking-wide"
+            >
+              Login
+            </button>
+          </form>
+
+          <div className="text-center text-white text-sm mt-6">
+            Forgot your password? <span className="underline cursor-pointer">Recover</span>
+          </div>
+
+          <div className="text-center text-white text-sm mt-2">
+            Don’t have an account?{' '}
+            <span
+              className="underline cursor-pointer"
+              onClick={() => navigate('/signup')}
+            >
+              Sign up
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
