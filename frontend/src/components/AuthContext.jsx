@@ -25,8 +25,8 @@ export function AuthProvider({ children }) {
 
         if (!res.ok) throw new Error("Session invalid");
 
-        const data = await res.json();
-        setUser(data);
+const data = await res.json();
+setUser(data.username || data.email || data);  
       } catch (err) {
         localStorage.removeItem("access_token");
         setUser(null);
