@@ -25,7 +25,7 @@ export default function Header() {
     <header className="relative w-full px-6 py-4 flex items-center justify-between">
       {/* Logo (left aligned) */}
       <div className="flex items-center space-x-2 absolute left-6 top-1/2 transform -translate-y-1/2">
-        <img src="/logo.png" alt="Logo" className="w-20 h-20" />
+        <img src="/logo.png" alt="Logo" className="w-10 h-10" />
         <h1 className="text-xl font-bold font-montserrat text-white-200">ClipCert</h1>
       </div>
 

@@ -31,7 +31,6 @@ export default function Verify() {
     try {
       setIsVerifying(true);
       const token = localStorage.getItem('access_token');
-
       const res = await authFetch('https://video-auth-serverside.onrender.com/video/verify', {
         method: 'POST',
         headers: {
@@ -55,33 +54,35 @@ export default function Verify() {
   };
 
   return (
-    <div className="max-w-md mx-auto p-4 bg-white rounded shadow">
-      <h2 className="text-xl font-bold mb-4">Verify Video</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="file"
-          accept="video/*"
-          onChange={handleFileChange}
-          className="block mb-4"
-        />
-        <input
-          type="text"
-          placeholder="Enter username"
-          value={username}
-          onChange={handleUsernameChange}
-          className="block w-full mb-4 border px-3 py-2 rounded"
-        />
-        <button
-          type="submit"
-          disabled={isVerifying}
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50"
-        >
-          {isVerifying ? 'Verifying...' : 'Verify'}
-        </button>
-      </form>
-      {message && (
-        <pre className="mt-4 text-sm text-blue-800 whitespace-pre-wrap">{message}</pre>
-      )}
+    <div className="flex justify-center items-center min-h-screen bg-[#0e131f] px-4">
+      <div className="bg-[#0e131f] p-8 rounded-xl shadow-xl w-full max-w-md text-white border border-slate-700">
+        <h2 className="text-2xl font-bold mb-6 text-center">Verify Video</h2>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="file"
+            accept="video/*"
+            onChange={handleFileChange}
+            className="w-full mb-4 px-4 py-2 rounded bg-gray-800 border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <input
+            type="text"
+            placeholder="Enter username"
+            value={username}
+            onChange={handleUsernameChange}
+            className="w-full mb-4 px-4 py-2 rounded bg-gray-800 border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            type="submit"
+            disabled={isVerifying}
+            className="w-full py-2 rounded bg-gradient-to-r from-sky-500 to-cyan-400 text-white font-bold hover:opacity-90 transition"
+          >
+            {isVerifying ? 'Verifying...' : 'Verify'}
+          </button>
+        </form>
+        {message && (
+          <pre className="mt-4 text-sm text-green-300 whitespace-pre-wrap">{message}</pre>
+        )}
+      </div>
     </div>
   );
 }
