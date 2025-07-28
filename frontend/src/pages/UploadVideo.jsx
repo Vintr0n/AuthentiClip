@@ -99,9 +99,16 @@ if (res.ok) {
           )}
         </form>
 
-        {message && (
-          <pre className="mt-4 text-sm text-green-300 whitespace-pre-wrap">{message}</pre>
-        )}
+{uploadSuccess && (
+  <div className="mt-6 w-32 mx-auto">
+    <Lottie animationData={successAnim} loop={false} />
+    <p className="text-center text-green-400 mt-2 font-semibold">Upload successful!</p>
+  </div>
+)}
+
+{!uploadSuccess && message && (
+  <pre className="mt-4 text-sm text-green-300 whitespace-pre-wrap">{message}</pre>
+)}
 
         {uploadHistory.length > 0 && (
           <div className="mt-8">
