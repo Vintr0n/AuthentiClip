@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { authFetch } from '../utils/authFetch';
+import Lottie from "lottie-react";
+import successAnim from "../assets/lottie/success.json";
 
 export default function UploadVideo() {
   const [file, setFile] = useState(null);
@@ -29,7 +31,7 @@ export default function UploadVideo() {
     setFile(e.target.files[0]);
     setMessage('');
   };
-
+const [uploadSuccess, setUploadSuccess] = useState(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!file) {
@@ -51,15 +53,19 @@ export default function UploadVideo() {
         body: formData,
       });
 
-      if (res.ok) {
-        const result = await res.json();
-        setMessage(`Upload successful!\n${JSON.stringify(result, null, 2)}`);
-        setFile(null);
-        fetchHistory();
-      } else {
-        const error = await res.text();
-        setMessage(`Upload failed: ${res.status} ${res.statusText}\n${error}`);
-      }
+if (res.ok) {
+  const result = await res.json();
+  setUploadSuccess(true);
+  setMessage('');
+  setFile(null);
+  fetchHistory();
+  setTimeout(() => setUploadSuccess(false), 4000); // auto-hide animation
+} else {
+  const error = await res.text();
+  setUploadSuccess(false);
+  setMessage(`Upload failed: ${res.status} ${res.statusText}\n${error}`);
+}
+
     } catch (err) {
       setMessage('Upload failed: ' + err.message);
     } finally {
@@ -105,7 +111,7 @@ export default function UploadVideo() {
                 <tr className="text-left border-b border-slate-600">
                   <th className="pb-1">Filename</th>
                   <th className="pb-1">Uploaded At</th>
-			<th className="pb-1">GUID</th>
+			<th className="pb-1">Video ID</th>
                 </tr>
               </thead>
               <tbody>
