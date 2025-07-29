@@ -1,3 +1,6 @@
+import twitterImg from '../assets/twitterExample.png';
+import youtubeImg from '../assets/youtubeExample.png';
+
 export default function About() {
   return (
     <div className="flex justify-center min-h-screen overflow-y-auto items-start mt-10 px-4">
@@ -19,6 +22,21 @@ export default function About() {
 		          This isn’t just about technology — it's about protecting identity, accountability,
           and truth in an increasingly synthetic digital world.
           This project aims to restore clarity in a time of confusion — giving people the tools to stand behind what’s real, and challenge what isn’t.
+        </p>
+		  <p className="mb-4 text-gray-300">
+          Imagine a standard where trusted voices — journalists, content creators, or public figures — list their
+          public verification keys directly on their social profiles. Anyone could instantly verify the origin
+          of a video, and know with confidence whether it was real or forged.
+        </p>
+
+        <div className="mb-6">
+          <img src={twitterImg} alt="Twitter Example" className="w-full rounded-lg border border-slate-600 mb-4" />
+          <img src={youtubeImg} alt="YouTube Example" className="w-full rounded-lg border border-slate-600" />
+        </div>
+
+        <p className="text-sm text-gray-500 text-center">
+          These mockups show what it could look like if platforms supported cryptographic video verification
+          as a public standard.
         </p>
       </div>
     </div>
