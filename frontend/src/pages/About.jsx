@@ -1,4 +1,4 @@
-import twitterImg from '../assets/Twitter.png';
+import twitterImg from '../assets/twitterExample.png';
 import youtubeImg from '../assets/youtubeExample.png';
 
 export default function About() {
