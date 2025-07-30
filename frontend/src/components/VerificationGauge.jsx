@@ -13,7 +13,7 @@ export default function VerificationGauge({ matchPercentage, matchCount, totalFr
         clearInterval(interval);
       }
       setDisplayedPercentage(current);
-    }, 10); // adjust speed (ms between steps)
+    }, 200); // adjust speed (ms between steps)
     return () => clearInterval(interval);
   }, [matchPercentage]);
 

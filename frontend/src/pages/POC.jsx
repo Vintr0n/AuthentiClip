@@ -1,6 +1,6 @@
 import uploadImg from '../assets/uploadScreenshot.png';
-import verifyImg from '../assets/uploadScreenshot.png';
-import resultImg from '../assets/uploadScreenshot.png';
+import verifyImg from '../assets/verifyloadingScreenshot.png';
+import resultImg from '../assets/verifiedScreenshot.png';
 
 export default function POC() {
   return (
