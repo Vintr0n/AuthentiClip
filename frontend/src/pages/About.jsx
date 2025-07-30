@@ -22,7 +22,7 @@ export default function About() {
       </div>
 
       {/* Vision Section */}
-      <div className="w-full max-w-3xl text-white text-center">
+      <div className="w-full max-w-3xl text-white">
         <h2 className="text-2xl font-semibold mb-4">What the Future Might Look Like</h2>
         <p className="mb-6 text-white px-4">
           Imagine a standard where trusted voices — journalists, creators, or public figures — list their public verification keys directly on their social profiles. Anyone could instantly verify the origin of a video, and know with confidence whether it was real or forged.
