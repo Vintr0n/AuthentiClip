@@ -9,7 +9,7 @@ export default function VerificationGauge({ matchPercentage, matchCount, totalFr
 
   return (
     <div className="mt-6 text-center">
-      <h3 className="text-lg font-bold mb-2">Match Score</h3>
+      <h3 className="text-lg font-bold mb-2">{`Content Match Score: ${matchPercentage}%`}</h3>
       <div className="relative h-8 w-full bg-gray-800 rounded-full overflow-hidden">
         <div
           className={`h-full ${getColor(matchPercentage)} transition-all duration-700`}
@@ -17,7 +17,6 @@ export default function VerificationGauge({ matchPercentage, matchCount, totalFr
         />
       </div>
       <div className="mt-2 text-sm text-gray-300">
-        <p>{`Content Match Score: ${matchPercentage}%`}</p>
         <p>{`Frames matched: ${matchCount} / ${totalFrames}`}</p>
       </div>
     </div>

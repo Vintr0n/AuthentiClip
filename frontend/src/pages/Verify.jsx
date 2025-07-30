@@ -48,7 +48,7 @@ export default function Verify() {
 
       if (res.ok) {
         const result = await res.json();
-        setMessage("Verification successful.");
+        //setMessage("Verification successful.");
         setMatchData(result);
       } else {
         const error = await res.text();
