@@ -1,4 +1,5 @@
-import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg/dist/ffmpeg.min.js';
+// src/utils/convertVideo.js
+import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 
 const ffmpeg = createFFmpeg({ log: false });
 
@@ -7,7 +8,7 @@ export async function convertMovToMp4(file) {
     await ffmpeg.load();
   }
 
-  const originalName = file.name.replace(/\s+/g, '_'); // avoid spaces
+  const originalName = file.name.replace(/\s+/g, '_');
   const inputName = originalName;
   const outputName = originalName.replace(/\.mov$/i, '.mp4');
 
