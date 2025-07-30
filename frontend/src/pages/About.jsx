@@ -25,11 +25,14 @@ ClipCert’s mission is to promote a future where anyone can prove that their vi
 This project aims to restore clarity in a time of confusion - giving people the tools to certify what’s real, and challenge what isn’t.
         </p>
 
+        <p className="mb-4 text-white">
+The long-term vision for ClipCert is to help establish an industry standard for cryptographically signed digital content, similar to how TLS and Certificate Authorities (CAs) secure the web, ClipCert would help publishers of digital content cryptographically sign their videos and make their public keys accessible - by making them visible on their social platforms and websites. This would allow anyone to independently verify whether a video truly originated from a trusted source, or if it’s been altered, falsely attributed, or entirely fabricated.
+        </p>
       </div>
 
       {/* Wide Image Section */}
       <div className="w-full px-4 mb-16">
-        <div className="flex flex-col md:flex-row justify-center items-center gap-6">
+        <div className="flex flex-col md:flex-row justify-center items-center gap-4">
           <img
             src={twitterImg}
             alt="Twitter Example"
