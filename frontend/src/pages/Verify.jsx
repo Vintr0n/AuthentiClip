@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { authFetch } from '../utils/authFetch';
-import { convertMovToMp4 } from '../utils/convertVideo';
 
 export default function Verify() {
   const [file, setFile] = useState(null);
@@ -28,17 +27,7 @@ export default function Verify() {
     setIsVerifying(true);
     setMessage('');
 
-    let videoToUpload = file;
-
-    if (file.name.toLowerCase().endsWith('.mov')) {
-      try {
-        videoToUpload = await convertMovToMp4(file);
-      } catch (err) {
-        setIsVerifying(false);
-        setMessage('Video conversion failed: ' + err.message);
-        return;
-      }
-    }
+    const videoToUpload = file;
 
     const formData = new FormData();
     formData.append('video_file', videoToUpload);

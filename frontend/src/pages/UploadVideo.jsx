@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { authFetch } from '../utils/authFetch';
 import Lottie from "lottie-react";
 import successAnim from "../assets/lottie/success.json";
-import { convertMovToMp4 } from '../utils/convertVideo';
 
 export default function UploadVideo() {
   const [file, setFile] = useState(null);
@@ -45,17 +44,7 @@ export default function UploadVideo() {
     setMessage('');
     setUploadSuccess(false);
 
-    let uploadFile = file;
-
-    if (file.name.toLowerCase().endsWith('.mov')) {
-      try {
-        uploadFile = await convertMovToMp4(file);
-      } catch (err) {
-        setIsUploading(false);
-        setMessage('Video conversion failed: ' + err.message);
-        return;
-      }
-    }
+    const uploadFile = file;
 
     const formData = new FormData();
     formData.append('video_file', uploadFile);
