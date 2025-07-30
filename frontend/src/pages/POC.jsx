@@ -42,22 +42,13 @@ export default function POC() {
           </div>
         </div>
 
-        {/* Roadmap */}
-        <div>
-          <h2 className="text-2xl font-semibold mb-4">Roadmap</h2>
-          <ul className="list-disc list-inside text-white space-y-2">
-            <li>Search for users</li>
-            <li>Highlight scenes that failed verification</li>
-          </ul>
-        </div>
-
         {/* Limitations */}
         <div>
           <h2 className="text-2xl font-semibold mb-4">Limitations (POC only)</h2>
           <ul className="list-disc list-inside text-white space-y-2">
             <li>Only .mp4 and .mov files supported</li>
             <li>Max video length: 10 seconds</li>
-            <li>Max file size: 200MB</li>
+            <li>Max file size: 25MB</li>
             <li>Any editing, overlays, or visual changes will reduce the verification score</li>
 <li>
   Frame order or trimming does not impact verification, but encoding changes, filters, or added scenes can reduce the score. The system is designed to be resilient to technical variations while flagging meaningful edits.
