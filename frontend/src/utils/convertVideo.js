@@ -3,12 +3,12 @@ let ffmpegInstance = null;
 export async function convertMovToMp4(file) {
   try {
     if (!ffmpegInstance) {
-      const { createFFmpeg, fetchFile } = (await import('@ffmpeg/ffmpeg')).default;
+      const { createFFmpeg, fetchFile } = await import('@ffmpeg/ffmpeg');
 
       ffmpegInstance = createFFmpeg({ log: true });
       await ffmpegInstance.load();
 
-      // Save fetchFile for later
+      // Store fetchFile separately (not needed but fine)
       ffmpegInstance._fetchFile = fetchFile;
     }
 
@@ -33,7 +33,4 @@ export async function convertMovToMp4(file) {
 
     return new File([convertedBlob], outputName, { type: 'video/mp4' });
   } catch (err) {
-    console.error("FFmpeg conversion error:", err);
-    throw new Error(err.message || 'Unknown ffmpeg conversion error');
-  }
-}
+    console.error("FFmpeg conversion error:
