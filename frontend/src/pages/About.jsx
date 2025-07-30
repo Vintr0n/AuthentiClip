@@ -10,24 +10,21 @@ export default function About() {
         <h1 className="text-3xl font-bold mb-6 text-center">ClipCert Project</h1>
 
         <p className="mb-4 text-white">
-          This project was born out of a concern about the rise of AI-generated impersonations and their impact on truth and trust.
+          This project was born out of a concern about the rise of AI-generated content and the impact on truth and authenticity.
         </p>
 
         <p className="mb-4 text-white">
-          As deepfakes become more convincing and widely accessible, creators face a growing challenge: proving they made what they publish — and disproving what they didn’t. Whether it’s manipulated speech, stolen likeness, or reused footage, the line between real and synthetic is rapidly blurring.
+As deepfakes become more convincing and the tools to create them become widely accessible, content creators, actors, journalists and public figures face a growing challenge: proving ownership of their online content and disproving content that looks to be real, but it is not authorised by them. 
         </p>
 
         <p className="mb-4 text-white">
-          My mission is to promote a future where anyone can prove that their video is authentic regardless of how it’s been shared, or republished online — and that any other video featuring them or their footage has been forged.
+ClipCert’s mission is to promote a future where anyone can prove that their video is authentic regardless of how it’s been shared, or republished online and that any other video featuring them or their footage has been forged.
         </p>
 
         <p className="mb-4 text-white">
-          This project aims to restore clarity in a time of confusion — giving people the tools to stand behind what’s real, and challenge what isn’t.
+This project aims to restore clarity in a time of confusion - giving people the tools to certify what’s real, and challenge what isn’t.
         </p>
 
-        <p className="text-white">
-          Imagine a standard where trusted voices — journalists, creators, or public figures — list their public verification keys directly on their social profiles. Anyone could instantly verify the origin of a video, and know with confidence whether it was real or forged.
-        </p>
       </div>
 
       {/* Wide Image Section */}
@@ -48,7 +45,8 @@ export default function About() {
         <p className="text-sm text-gray-200 mt-6 text-center">
           These mockups show what it could look like if platforms supported cryptographic video verification as a public standard.
         </p>
-      </div>
+      
+</div>
     </div>
   );
 }

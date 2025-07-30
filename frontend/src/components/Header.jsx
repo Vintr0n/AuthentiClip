@@ -45,6 +45,9 @@ export default function Header() {
           <NavLink to="/about" className={navLinkClass}>
             About
           </NavLink>
+          <NavLink to="/POC" className={navLinkClass}>
+            POC
+          </NavLink>
           {user && (
             <>
               <NavLink to="/upload" className={navLinkClass}>
