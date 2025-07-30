@@ -10,7 +10,7 @@ export default function About() {
         <h1 className="text-3xl font-bold mb-6 text-center">ClipCert Project</h1>
 
         <p className="mb-4 text-white">
-          This project was born out of a concern about the rise of AI-generated content and the impact on truth and authenticity.
+          This project was created in response to growing concerns about the rise of AI-generated content and its impact on truth and authenticity.
         </p>
 
         <p className="mb-4 text-white">
