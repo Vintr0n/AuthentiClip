@@ -1,6 +1,6 @@
 import twitterImg from '../assets/twitterExample.png';
 import youtubeImg from '../assets/youtubeExample.png';
-import logo from '../assets/logo-squared.png.png';
+import logo from '../assets/logo-squared.png';
 
 export default function About() {
   return (
