@@ -14,23 +14,8 @@ import os
 import json
 import hashlib
 import time
-import subprocess
 
 router = APIRouter()
-
-def convert_mov_to_mp4(input_path: str) -> str:
-    output_tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
-    output_path = output_tmp.name
-    output_tmp.close()
-    try:
-        subprocess.run([
-            "ffmpeg", "-y", "-i", input_path,
-            "-c:v", "libx264", "-preset", "fast", "-crf", "23",
-            "-c:a", "aac", "-strict", "experimental", output_path
-        ], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        return output_path
-    except subprocess.CalledProcessError:
-        raise HTTPException(status_code=500, detail="Failed to convert .mov to .mp4")
 
 @router.post("/upload")
 async def upload_video(
@@ -39,8 +24,8 @@ async def upload_video(
     db: Session = Depends(get_db)
 ):
     ext = os.path.splitext(video_file.filename)[1].lower()
-    if ext not in [".mp4", ".mov"]:
-        raise HTTPException(status_code=400, detail="Unsupported video format. Only .mp4 and .mov are allowed.")
+    if ext != ".mp4":
+        raise HTTPException(status_code=400, detail="Only .mp4 format is accepted. Convert before uploading.")
 
     with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp:
         content = await video_file.read()
@@ -49,22 +34,12 @@ async def upload_video(
         tmp.write(content)
         tmp_path = tmp.name
 
-    converted_path = tmp_path
-    if ext == ".mov":
-        try:
-            converted_path = convert_mov_to_mp4(tmp_path)
-        except HTTPException as e:
-            os.remove(tmp_path)
-            raise e
-
     try:
         start = time.time()
-        raw_hashes = await run_in_threadpool(generate_video_hashes, converted_path, 1)
+        raw_hashes = await run_in_threadpool(generate_video_hashes, tmp_path, 1)
         duration = time.time() - start
     finally:
         os.remove(tmp_path)
-        if converted_path != tmp_path:
-            os.remove(converted_path)
 
     encoded_hashes = [h.encode("utf-8").decode("utf-8") for h in raw_hashes]
 
@@ -116,27 +91,18 @@ async def verify_video(
     public_key_bytes = target_user.public_key
 
     ext = os.path.splitext(video_file.filename)[1].lower()
-    if ext not in [".mp4", ".mov"]:
-        raise HTTPException(status_code=400, detail="Unsupported video format. Only .mp4 and .mov are allowed.")
+    if ext != ".mp4":
+        raise HTTPException(status_code=400, detail="Only .mp4 format is accepted. Convert before uploading.")
+
 
     with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp:
         tmp.write(await video_file.read())
         tmp_path = tmp.name
 
-    converted_path = tmp_path
-    if ext == ".mov":
-        try:
-            converted_path = convert_mov_to_mp4(tmp_path)
-        except HTTPException as e:
-            os.remove(tmp_path)
-            raise e
-
     try:
-        uploaded_hashes = await run_in_threadpool(generate_video_hashes, converted_path, 1)
+        uploaded_hashes = await run_in_threadpool(generate_video_hashes, tmp_path, 1)
     finally:
         os.remove(tmp_path)
-        if converted_path != tmp_path:
-            os.remove(converted_path)
 
     bundles = db.query(SignedBundle).filter(
         SignedBundle.user_id == target_user.id

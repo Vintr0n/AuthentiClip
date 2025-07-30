@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { authFetch } from '../utils/authFetch';
+import { convertMovToMp4 } from '../utils/convertVideo';
 
 export default function Verify() {
   const [file, setFile] = useState(null);
@@ -24,12 +25,26 @@ export default function Verify() {
       return;
     }
 
+    setIsVerifying(true);
+    setMessage('');
+
+    let videoToUpload = file;
+
+    if (file.name.toLowerCase().endsWith('.mov')) {
+      try {
+        videoToUpload = await convertMovToMp4(file);
+      } catch (err) {
+        setIsVerifying(false);
+        setMessage('Video conversion failed: ' + err.message);
+        return;
+      }
+    }
+
     const formData = new FormData();
-    formData.append('video_file', file);
+    formData.append('video_file', videoToUpload);
     formData.append('username', username);
 
     try {
-      setIsVerifying(true);
       const token = localStorage.getItem('access_token');
       const res = await authFetch('https://video-auth-serverside.onrender.com/video/verify', {
         method: 'POST',
@@ -54,8 +69,8 @@ export default function Verify() {
   };
 
   return (
-      <div className="flex justify-center min-h-screen overflow-y-auto items-start mt-10 px-4">
-        <div className="w-full sm:max-w-xl bg-[#0e131f] border border-slate-700 p-10 rounded-xl shadow-lg text-white">
+    <div className="flex justify-center min-h-screen overflow-y-auto items-start mt-10 px-4">
+      <div className="w-full sm:max-w-xl bg-[#0e131f] border border-slate-700 p-10 rounded-xl shadow-lg text-white">
         <h2 className="text-2xl font-bold mb-6 text-center">Verify Video</h2>
         <form onSubmit={handleSubmit}>
           <input

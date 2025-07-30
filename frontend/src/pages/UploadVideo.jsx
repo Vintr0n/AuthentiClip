@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react';
 import { authFetch } from '../utils/authFetch';
 import Lottie from "lottie-react";
 import successAnim from "../assets/lottie/success.json";
+import { convertMovToMp4 } from '../utils/convertVideo';
 
 export default function UploadVideo() {
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
   const [uploadHistory, setUploadHistory] = useState([]);
 
   const fetchHistory = async () => {
@@ -31,7 +33,7 @@ export default function UploadVideo() {
     setFile(e.target.files[0]);
     setMessage('');
   };
-const [uploadSuccess, setUploadSuccess] = useState(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!file) {
@@ -39,11 +41,26 @@ const [uploadSuccess, setUploadSuccess] = useState(false);
       return;
     }
 
+    setIsUploading(true);
+    setMessage('');
+    setUploadSuccess(false);
+
+    let uploadFile = file;
+
+    if (file.name.toLowerCase().endsWith('.mov')) {
+      try {
+        uploadFile = await convertMovToMp4(file);
+      } catch (err) {
+        setIsUploading(false);
+        setMessage('Video conversion failed: ' + err.message);
+        return;
+      }
+    }
+
     const formData = new FormData();
-    formData.append('video_file', file);
+    formData.append('video_file', uploadFile);
 
     try {
-      setIsUploading(true);
       const token = localStorage.getItem('access_token');
       const res = await authFetch('https://video-auth-serverside.onrender.com/video/upload', {
         method: 'POST',
@@ -53,19 +70,16 @@ const [uploadSuccess, setUploadSuccess] = useState(false);
         body: formData,
       });
 
-if (res.ok) {
-  const result = await res.json();
-  setUploadSuccess(true);
-  setMessage('');
-  setFile(null);
-  fetchHistory();
-  setTimeout(() => setUploadSuccess(false), 4000); // auto-hide animation
-} else {
-  const error = await res.text();
-  setUploadSuccess(false);
-  setMessage(`Upload failed: ${res.status} ${res.statusText}\n${error}`);
-}
-
+      if (res.ok) {
+        const result = await res.json();
+        setUploadSuccess(true);
+        setFile(null);
+        fetchHistory();
+        setTimeout(() => setUploadSuccess(false), 4000);
+      } else {
+        const error = await res.text();
+        setMessage(`Upload failed: ${res.status} ${res.statusText}\n${error}`);
+      }
     } catch (err) {
       setMessage('Upload failed: ' + err.message);
     } finally {
@@ -74,8 +88,8 @@ if (res.ok) {
   };
 
   return (
-      <div className="flex justify-center min-h-screen overflow-y-auto items-start mt-10 px-4">
-        <div className="w-full sm:max-w-xl bg-[#0e131f] border border-slate-700 p-10 rounded-xl shadow-lg text-white">
+    <div className="flex justify-center min-h-screen overflow-y-auto items-start mt-10 px-4">
+      <div className="w-full sm:max-w-xl bg-[#0e131f] border border-slate-700 p-10 rounded-xl shadow-lg text-white">
         <h2 className="text-2xl font-bold mb-6 text-center">Upload Video</h2>
         <form onSubmit={handleSubmit}>
           <input
@@ -99,16 +113,16 @@ if (res.ok) {
           )}
         </form>
 
-{uploadSuccess && (
-  <div className="mt-6 w-32 mx-auto">
-    <Lottie animationData={successAnim} loop={false} />
-    <p className="text-center text-green-400 mt-2 font-semibold">Upload successful!</p>
-  </div>
-)}
+        {uploadSuccess && (
+          <div className="mt-6 w-32 mx-auto">
+            <Lottie animationData={successAnim} loop={false} />
+            <p className="text-center text-green-400 mt-2 font-semibold">Upload successful!</p>
+          </div>
+        )}
 
-{!uploadSuccess && message && (
-  <pre className="mt-4 text-sm text-green-300 whitespace-pre-wrap">{message}</pre>
-)}
+        {!uploadSuccess && message && (
+          <pre className="mt-4 text-sm text-green-300 whitespace-pre-wrap">{message}</pre>
+        )}
 
         {uploadHistory.length > 0 && (
           <div className="mt-8">
@@ -118,7 +132,7 @@ if (res.ok) {
                 <tr className="text-left border-b border-slate-600">
                   <th className="pb-1">Filename</th>
                   <th className="pb-1">Uploaded At</th>
-			<th className="pb-1">Video ID</th>
+                  <th className="pb-1">Video ID</th>
                 </tr>
               </thead>
               <tbody>
@@ -126,7 +140,7 @@ if (res.ok) {
                   <tr key={index} className="border-b border-slate-700">
                     <td className="py-1 pr-2">{item.filename}</td>
                     <td className="py-1">{item.timestamp}</td>
-			<td className="py-1 font-mono text-xs text-slate-400">{item.guid}</td>
+                    <td className="py-1 font-mono text-xs text-slate-400">{item.guid}</td>
                   </tr>
                 ))}
               </tbody>
