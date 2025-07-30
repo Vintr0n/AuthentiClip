@@ -3,8 +3,8 @@ let ffmpegInstance = null;
 export async function convertMovToMp4(file) {
   if (!ffmpegInstance) {
     const ffmpegModule = await import('@ffmpeg/ffmpeg');
-    const createFFmpeg = ffmpegModule.createFFmpeg;
-    const fetchFile = ffmpegModule.fetchFile;
+    const createFFmpeg = ffmpegModule.default.createFFmpeg;
+    const fetchFile = ffmpegModule.default.fetchFile;
 
     ffmpegInstance = createFFmpeg({ log: false });
     await ffmpegInstance.load();
@@ -29,5 +29,7 @@ export async function convertMovToMp4(file) {
   const data = ffmpegInstance.FS('readFile', outputName);
   const convertedBlob = new Blob([data.buffer], { type: 'video/mp4' });
 
-  return new File([convertedBlob], outputName, { type: 'video/mp4' });
+  return new File([convertedBlob], outputName, {
+    type: 'video/mp4',
+  });
 }
