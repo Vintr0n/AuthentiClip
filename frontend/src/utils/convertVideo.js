@@ -1,21 +1,27 @@
-let ffmpeg = null;
+let ffmpegInstance = null;
+let fetchFileFn = null;
 
 export async function convertMovToMp4(file) {
-  if (!ffmpeg) {
+  if (!ffmpegInstance) {
     const ffmpegModule = await import('@ffmpeg/ffmpeg');
-    ffmpeg = ffmpegModule.createFFmpeg({ log: false });
-    await ffmpeg.load();
-  }
+    const createFFmpeg = ffmpegModule.createFFmpeg;
+    fetchFileFn = ffmpegModule.fetchFile;
 
-  const fetchFile = (await import('@ffmpeg/ffmpeg')).fetchFile;
+    if (typeof createFFmpeg !== 'function') {
+      throw new Error('createFFmpeg is not available from @ffmpeg/ffmpeg');
+    }
+
+    ffmpegInstance = createFFmpeg({ log: false });
+    await ffmpegInstance.load();
+  }
 
   const originalName = file.name.replace(/\s+/g, '_');
   const inputName = originalName;
   const outputName = originalName.replace(/\.mov$/i, '.mp4');
 
-  ffmpeg.FS('writeFile', inputName, await fetchFile(file));
+  ffmpegInstance.FS('writeFile', inputName, await fetchFileFn(file));
 
-  await ffmpeg.run(
+  await ffmpegInstance.run(
     '-i', inputName,
     '-c:v', 'libx264',
     '-preset', 'fast',
@@ -24,7 +30,7 @@ export async function convertMovToMp4(file) {
     outputName
   );
 
-  const data = ffmpeg.FS('readFile', outputName);
+  const data = ffmpegInstance.FS('readFile', outputName);
   const convertedBlob = new Blob([data.buffer], { type: 'video/mp4' });
 
   return new File([convertedBlob], outputName, {
