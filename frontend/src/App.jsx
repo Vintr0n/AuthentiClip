@@ -3,7 +3,7 @@ import RequireAuth from './components/RequireAuth';
 import Header from './components/Header';
 
 import About from './pages/About';
-import FAQ from './pages/FAQ';
+import POC from './pages/POC';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import UploadVideo from './pages/UploadVideo';
@@ -17,7 +17,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/about" element={<About />} />
-          <Route path="/faq" element={<FAQ />} />
+          <Route path="/poc" element={<POC />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route
