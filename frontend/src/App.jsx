@@ -11,7 +11,7 @@ import Verify from './pages/Verify';
 
 export default function App() {
   return (
-    <div className="min-h-screen h-screen bg-gradient-to-br from-sky-300 to-blue-600 text-white flex flex-col overflow-hidden">
+    <div className="min-h-screen h-screen bg-gradient-to-br from-sky-300 to-blue-600 text-white flex flex-col overflow-auto">
       <Header />
       <main className="flex-grow flex justify-center items-center px-4">
         <Routes>
