@@ -61,10 +61,8 @@ export default function POC() {
           <h2 className="text-2xl font-semibold mb-4">How It Works</h2>
           <p className="text-white">
             ClipCert does not rely on AI or deepfake detection. Instead, it uses traditional cryptographic techniques.
-            When a video is uploaded, a perceptual hash is signed with a private key. Anyone can later verify that video
-            using the creator's public key.
-
-ClipCert is not making use of AI based technology, ClipCert is not using AI to identify AI or other similar projects. ClipCert uses traditional methods of certification - upon video upload videos are digitally and cryptographically signed with a private key, the public key is then used in the verification process. 
+			ClipCert uses traditional methods of certification - upon video upload videos are digitally and cryptographically signed with a private key, the public key is then used in the verification process. Anyone can later verify that video
+            using the creator's username which is linked to the public key.
           </p>
         </div>
 
