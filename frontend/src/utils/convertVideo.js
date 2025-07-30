@@ -1,11 +1,13 @@
-import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
-
-const ffmpeg = createFFmpeg({ log: false });
+let ffmpeg = null;
 
 export async function convertMovToMp4(file) {
-  if (!ffmpeg.isLoaded()) {
+  if (!ffmpeg) {
+    const ffmpegModule = await import('@ffmpeg/ffmpeg');
+    ffmpeg = ffmpegModule.createFFmpeg({ log: false });
     await ffmpeg.load();
   }
+
+  const fetchFile = (await import('@ffmpeg/ffmpeg')).fetchFile;
 
   const originalName = file.name.replace(/\s+/g, '_');
   const inputName = originalName;
