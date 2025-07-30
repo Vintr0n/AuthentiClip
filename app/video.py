@@ -1,4 +1,5 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends, Form
+from app.video_conversion import convert_mov_to_mp4
 from sqlalchemy.orm import Session
 from app.models import SignedBundle, User
 from app.database import get_db
@@ -24,8 +25,9 @@ async def upload_video(
     db: Session = Depends(get_db)
 ):
     ext = os.path.splitext(video_file.filename)[1].lower()
-    if ext != ".mp4":
-        raise HTTPException(status_code=400, detail="Only .mp4 format is accepted. Convert before uploading.")
+    if ext not in [".mp4", ".mov"]:
+        raise HTTPException(status_code=400, detail="Unsupported format. Only .mp4 or .mov allowed.")
+
 
     with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp:
         content = await video_file.read()
@@ -33,6 +35,14 @@ async def upload_video(
             raise HTTPException(status_code=400, detail="Empty video file")
         tmp.write(content)
         tmp_path = tmp.name
+        if ext == ".mov":
+            mp4_tmp = tmp_path.replace(".mov", ".mp4")
+            try:
+                await run_in_threadpool(convert_mov_to_mp4, tmp_path, mp4_tmp)
+                os.remove(tmp_path)
+                tmp_path = mp4_tmp
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=f"Video conversion failed: {str(e)}")    
 
     try:
         start = time.time()
@@ -91,13 +101,23 @@ async def verify_video(
     public_key_bytes = target_user.public_key
 
     ext = os.path.splitext(video_file.filename)[1].lower()
-    if ext != ".mp4":
-        raise HTTPException(status_code=400, detail="Only .mp4 format is accepted. Convert before uploading.")
+    if ext not in [".mp4", ".mov"]:
+        raise HTTPException(status_code=400, detail="Unsupported format. Only .mp4 or .mov allowed.")
+
+
 
 
     with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp:
         tmp.write(await video_file.read())
         tmp_path = tmp.name
+        if ext == ".mov":
+            mp4_tmp = tmp_path.replace(".mov", ".mp4")
+            try:
+                await run_in_threadpool(convert_mov_to_mp4, tmp_path, mp4_tmp)
+                os.remove(tmp_path)
+                tmp_path = mp4_tmp
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=f"Video conversion failed: {str(e)}")    
 
     try:
         uploaded_hashes = await run_in_threadpool(generate_video_hashes, tmp_path, 1)
