@@ -46,7 +46,7 @@ export default function POC() {
         <div>
           <h2 className="text-2xl font-semibold mb-4">Limitations (POC only)</h2>
           <ul className="list-disc list-inside text-white space-y-2">
-            <li>Only .mp4 and .mov files supported</li>
+            <li>Only .mp4 files supported</li>
             <li>Max video length: 10 seconds</li>
             <li>Max file size: 25MB</li>
             <li>Any editing, overlays, or visual changes will reduce the verification score</li>
