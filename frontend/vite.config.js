@@ -4,11 +4,6 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
-    include: ['@ffmpeg/ffmpeg']
+    include: ['@ffmpeg/ffmpeg'],
   },
-  build: {
-    commonjsOptions: {
-      include: [/node_modules/]
-    }
-  }
 });

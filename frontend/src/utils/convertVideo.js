@@ -1,11 +1,10 @@
-// src/utils/convertVideo.js
-import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
-
-
-const ffmpeg = createFFmpeg({ log: false });
+let ffmpeg = null;
 
 export async function convertMovToMp4(file) {
-  if (!ffmpeg.isLoaded()) {
+  if (!ffmpeg) {
+    const { createFFmpeg, fetchFile } = await import('@ffmpeg/ffmpeg');
+    ffmpeg = createFFmpeg({ log: false });
+    ffmpeg.fetchFile = fetchFile;
     await ffmpeg.load();
   }
 
@@ -13,7 +12,7 @@ export async function convertMovToMp4(file) {
   const inputName = originalName;
   const outputName = originalName.replace(/\.mov$/i, '.mp4');
 
-  ffmpeg.FS('writeFile', inputName, await fetchFile(file));
+  ffmpeg.FS('writeFile', inputName, await ffmpeg.fetchFile(file));
 
   await ffmpeg.run(
     '-i', inputName,
