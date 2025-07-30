@@ -23,10 +23,11 @@ async def upload_video(
     video_file: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
-    if not video_file.filename.lower().endswith((".mp4", ".mov")):
+    ext = os.path.splitext(video_file.filename)[1].lower()
+    if ext not in [".mp4", ".mov"]:
         raise HTTPException(status_code=400, detail="Unsupported video format. Only .mp4 and .mov are allowed.")
 
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp:
+    with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp:
         content = await video_file.read()
         if not content:
             raise HTTPException(status_code=400, detail="Empty video file")
@@ -89,7 +90,11 @@ async def verify_video(
 
     public_key_bytes = target_user.public_key
 
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp:
+    ext = os.path.splitext(video_file.filename)[1].lower()
+    if ext not in [".mp4", ".mov"]:
+        raise HTTPException(status_code=400, detail="Unsupported video format. Only .mp4 and .mov are allowed.")
+
+    with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp:
         tmp.write(await video_file.read())
         tmp_path = tmp.name
 
