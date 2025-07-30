@@ -23,8 +23,8 @@ async def upload_video(
     video_file: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
-    if not video_file.filename.lower().endswith(".mp4"):
-        raise HTTPException(status_code=400, detail="Unsupported video format")
+    if not video_file.filename.lower().endswith((".mp4", ".mov")):
+        raise HTTPException(status_code=400, detail="Unsupported video format. Only .mp4 and .mov are allowed.")
 
     with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp:
         content = await video_file.read()
