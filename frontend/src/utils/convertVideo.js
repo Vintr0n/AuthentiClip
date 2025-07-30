@@ -33,4 +33,7 @@ export async function convertMovToMp4(file) {
 
     return new File([convertedBlob], outputName, { type: 'video/mp4' });
   } catch (err) {
-    console.error("FFmpeg conversion error:
+    console.error("FFmpeg conversion error:", err);
+    throw new Error(err.message || 'Unknown ffmpeg conversion error');
+  }
+}
