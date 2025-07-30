@@ -1,20 +1,24 @@
 import { useState } from 'react';
 import { authFetch } from '../utils/authFetch';
+import VerificationGauge from "../components/VerificationGauge";
 
 export default function Verify() {
   const [file, setFile] = useState(null);
   const [username, setUsername] = useState('');
   const [message, setMessage] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
+  const [matchData, setMatchData] = useState(null);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
     setMessage('');
+    setMatchData(null); // reset on new file
   };
 
   const handleUsernameChange = (e) => {
     setUsername(e.target.value);
     setMessage('');
+    setMatchData(null); // reset on username change
   };
 
   const handleSubmit = async (e) => {
@@ -26,11 +30,10 @@ export default function Verify() {
 
     setIsVerifying(true);
     setMessage('');
-
-    const videoToUpload = file;
+    setMatchData(null);
 
     const formData = new FormData();
-    formData.append('video_file', videoToUpload);
+    formData.append('video_file', file);
     formData.append('username', username);
 
     try {
@@ -45,7 +48,8 @@ export default function Verify() {
 
       if (res.ok) {
         const result = await res.json();
-        setMessage(`Verification successful:\n${JSON.stringify(result, null, 2)}`);
+        setMessage("Verification successful.");
+        setMatchData(result);
       } else {
         const error = await res.text();
         setMessage(`Verification failed: ${res.status} ${res.statusText}\n${error}`);
@@ -92,6 +96,14 @@ export default function Verify() {
 
         {message && (
           <pre className="mt-4 text-sm text-green-300 whitespace-pre-wrap">{message}</pre>
+        )}
+
+        {matchData && (
+          <VerificationGauge
+            matchPercentage={matchData.match_percentage}
+            matchCount={matchData.match_count}
+            totalFrames={matchData.total_uploaded_hashes}
+          />
         )}
       </div>
     </div>

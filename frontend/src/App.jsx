@@ -2,6 +2,8 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import RequireAuth from './components/RequireAuth';
 import Header from './components/Header';
 
+import TestGauge from "./pages/TestGauge";
+
 import About from './pages/About';
 import POC from './pages/POC';
 import Login from './pages/Login';
@@ -20,6 +22,9 @@ export default function App() {
           <Route path="/poc" element={<POC />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+<Route path="/test-gauge" element={<TestGauge />} />
+
+
           <Route
             path="/upload"
             element={
