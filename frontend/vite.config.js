@@ -5,5 +5,10 @@ export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
     include: ['@ffmpeg/ffmpeg']
+  },
+  build: {
+    commonjsOptions: {
+      include: [/node_modules/]
+    }
   }
 });
