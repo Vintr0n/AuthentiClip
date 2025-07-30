@@ -57,8 +57,8 @@ export default function POC() {
           <ul className="list-disc list-inside text-white space-y-2">
             <li>Only .mp4 and .mov files supported</li>
             <li>Max video length: 10 seconds</li>
-            <li>Max file size: 200MB
-            Any editing, overlays, or visual changes will reduce the verification score</li>
+            <li>Max file size: 200MB</li>
+            <li>Any editing, overlays, or visual changes will reduce the verification score</li>
 <li>
   Frame order or trimming does not impact verification, but encoding changes, filters, or added scenes can reduce the score. The system is designed to be resilient to technical variations while flagging meaningful edits.
 </li>
