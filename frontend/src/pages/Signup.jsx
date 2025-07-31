@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import logo from '../assets/logo-squared.png';
+
 
 export default function Signup() {
   const [email, setEmail] = useState('');
@@ -77,9 +79,9 @@ export default function Signup() {
           </div>
 		  
 <img
-  src="/src/assets/logo-squared.png"
+  src={logo}
   alt="ClipCert Logo"
-  className="w-40 mx-auto mt-6 animate-pulse"
+  className="w-40 mx-auto mt-6 motion-safe:animate-pulse"
 />
 
 

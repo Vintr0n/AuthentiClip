@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/AuthContext';
+import logo from '../assets/logo-squared.png';
+
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -81,10 +83,11 @@ export default function Login() {
           </div>
 		  
 <img
-  src="/src/assets/logo-squared.png"
+  src={logo}
   alt="ClipCert Logo"
-  className="w-40 mx-auto mt-6 animate-pulse"
+  className="w-40 mx-auto mt-6 motion-safe:animate-pulse"
 />
+
           <p className="text-sm text-center text-gray-300 mt-6">
             Don’t have an account?{' '}
             <Link to="/signup" className="underline hover:text-cyan-300">
