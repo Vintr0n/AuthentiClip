@@ -28,10 +28,32 @@ export default function UploadVideo() {
     fetchHistory();
   }, []);
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-    setMessage('');
+const handleFileChange = (e) => {
+  const selectedFile = e.target.files[0];
+  if (!selectedFile) return;
+
+  // Limit file size to 30MB
+  if (selectedFile.size > 30 * 1024 * 1024) {
+    setMessage('File is too large. Maximum allowed size is 30MB.');
+    setFile(null);
+    return;
+  }
+
+  // Check video duration
+  const videoElement = document.createElement('video');
+  videoElement.preload = 'metadata';
+  videoElement.onloadedmetadata = () => {
+    URL.revokeObjectURL(videoElement.src);
+    if (videoElement.duration > 10) {
+      setMessage('Video is too long. Maximum allowed duration is 10 seconds.');
+      setFile(null);
+    } else {
+      setFile(selectedFile);
+    }
   };
+  videoElement.src = URL.createObjectURL(selectedFile);
+};
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
