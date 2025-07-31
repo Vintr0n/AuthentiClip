@@ -124,3 +124,13 @@ def get_user(username: str, db: Session = Depends(get_db)):
         "username": user.username,
         "public_key": base64.b64encode(user.public_key).decode("utf-8") if user.public_key else None
     }
+
+@router.get("/usercount")
+def get_user_count(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    count = db.query(User).count()
+    return {"total_users": count}
+
+@router.get("/users")
+def list_users(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    users = db.query(User).all()
+    return {"users": [{"id": u.id, "username": u.username} for u in users]}
