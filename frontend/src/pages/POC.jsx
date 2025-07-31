@@ -83,15 +83,7 @@ export default function POC() {
         </div>
 		
 
-        {/* How It Works */}
-        <div>
-          <h2 className="text-2xl font-semibold mb-4">How It Works</h2>
-          <p className="text-white">
-            ClipCert does not rely on AI or deepfake detection. Instead, it uses traditional cryptographic techniques.
-			ClipCert uses traditional methods of certification - upon video upload videos are digitally and cryptographically signed with a private key, the public key is then used in the verification process. Anyone can later verify that video
-            using the creator's username which is linked to the public key.
-          </p>
-        </div>
+      
 
       </div>
     </div>

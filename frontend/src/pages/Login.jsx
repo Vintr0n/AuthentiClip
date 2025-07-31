@@ -79,7 +79,12 @@ export default function Login() {
               </div>
             )}
           </div>
-
+		  
+<img
+  src="/src/assets/logo-squared.png"
+  alt="ClipCert Logo"
+  className="w-40 mx-auto mt-6 animate-pulse"
+/>
           <p className="text-sm text-center text-gray-300 mt-6">
             Don’t have an account?{' '}
             <Link to="/signup" className="underline hover:text-cyan-300">

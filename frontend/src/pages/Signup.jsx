@@ -66,7 +66,7 @@ export default function Signup() {
               disabled={loading}
               className="w-full py-3 rounded-full bg-gradient-to-r from-sky-500 to-cyan-400 text-white font-semibold hover:opacity-90 transition"
             >
-              {loading ? 'Signing up...' : 'SIGN UP'}
+              {loading ? 'Signing up...' : 'Sign up'}
             </button>
 
             {loading && (
@@ -75,6 +75,13 @@ export default function Signup() {
               </div>
             )}
           </div>
+		  
+<img
+  src="/src/assets/logo-squared.png"
+  alt="ClipCert Logo"
+  className="w-40 mx-auto mt-6 animate-pulse"
+/>
+
 
           <p className="text-sm text-center text-gray-300 mt-6">
             Already have an account?{' '}
