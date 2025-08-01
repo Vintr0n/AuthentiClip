@@ -9,10 +9,28 @@ export default function Signup() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  
+  const passwordIsValid = (password) => {
+    const minLength = 8;
+    const hasNumber = /\d/;
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/;
+
+    return (
+      password.length >= minLength &&
+      hasNumber.test(password) &&
+      hasSpecial.test(password)
+    );
+  };
 
   const handleSignup = async (e) => {
     e.preventDefault();
     setError(null);
+
+    if (!passwordIsValid(password)) {
+      setError('Password must be at least 8 characters long and include at least one number and one special character.');
+      return;
+    }
+
     setLoading(true);
 
     try {

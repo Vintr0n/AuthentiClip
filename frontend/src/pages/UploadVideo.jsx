@@ -58,7 +58,7 @@ const handleFileChange = (e) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!file) {
-      setMessage('Please select a video file first.');
+      setMessage('Please select an appropriate video file first.');
       return;
     }
 
