@@ -17,7 +17,7 @@ def submit_feedback(
     db: Session = Depends(get_db),
     user = Depends(get_current_user)
 ):
-    feedback = Feedback(user_id=user["id"], content=entry.feedback)
+    feedback = Feedback(user_id=user.id, content=entry.feedback)
     db.add(feedback)
     db.commit()
     return {"message": "Feedback saved"}
@@ -27,7 +27,7 @@ def export_feedback(
     db: Session = Depends(get_db),
     user = Depends(get_current_user)
 ):
-    if user["username"] != "test@test.com":  # secure with your admin user
+    if user.username != "test@test.com":
         raise HTTPException(status_code=403, detail="Not authorized")
 
     entries = db.query(Feedback).join(User).all()
