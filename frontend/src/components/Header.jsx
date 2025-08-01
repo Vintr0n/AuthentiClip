@@ -56,6 +56,9 @@ export default function Header() {
               <NavLink to="/verify" className={navLinkClass}>
                 Verify
               </NavLink>
+			      <NavLink to="/feedback" className={navLinkClass}>
+				Feedback
+				</NavLink>
             </>
           )}
         </nav>

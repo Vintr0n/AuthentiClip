@@ -8,6 +8,8 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import UploadVideo from './pages/UploadVideo';
 import Verify from './pages/Verify';
+import Feedback from './pages/Feedback';
+
 
 export default function App() {
   return (
@@ -20,6 +22,7 @@ export default function App() {
           <Route path="/poc" element={<POC />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+		  <Route path="/feedback" element={<Feedback />} />
 
           <Route
             path="/upload"
