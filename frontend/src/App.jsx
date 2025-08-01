@@ -22,7 +22,7 @@ export default function App() {
           <Route path="/poc" element={<POC />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-		  <Route path="/feedback" element={<Feedback />} />
+
 
           <Route
             path="/upload"
@@ -40,6 +40,15 @@ export default function App() {
               </RequireAuth>
             }
           />
+		  <Route
+  path="/feedback"
+  element={
+    <RequireAuth>
+      <Feedback />
+    </RequireAuth>
+  }
+/>
+
         </Routes>
       </main>
     </div>

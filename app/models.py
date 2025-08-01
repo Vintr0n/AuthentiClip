@@ -6,6 +6,7 @@ from uuid import uuid4
 from datetime import datetime
 
 
+
 from datetime import datetime, timedelta
 import uuid
 
@@ -20,6 +21,9 @@ class User(Base):
 
     bundles = relationship("SignedBundle", back_populates="user")
     sessions = relationship("Session", back_populates="user")
+    feedback_entries = relationship("Feedback", back_populates="user", cascade="all, delete-orphan")
+    upload_history = relationship("UploadHistory", back_populates="user", cascade="all, delete-orphan")
+
 
 class SignedBundle(Base):
     __tablename__ = "signed_bundles"
@@ -54,5 +58,12 @@ class UploadHistory(Base):
 
     user = relationship("User", back_populates="upload_history")
 
-# Add this to the User model:
-User.upload_history = relationship("UploadHistory", back_populates="user", cascade="all, delete-orphan")
+class Feedback(Base):
+    __tablename__ = "feedback"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    content = Column(Text, nullable=False)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User", back_populates="feedback_entries")

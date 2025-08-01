@@ -1,11 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import FileResponse
-from fastapi import Depends
 from sqlalchemy.orm import Session
-from app.auth import get_current_user
 from pydantic import BaseModel
-from app.database import get_db
 from datetime import datetime
+from app.auth import get_current_user
+from app.database import get_db
+from app.models import Feedback, User
 
 router = APIRouter()
 
@@ -13,18 +12,31 @@ class FeedbackEntry(BaseModel):
     feedback: str
 
 @router.post("/feedback")
-async def submit_feedback(entry: FeedbackEntry, user=Depends(get_current_user), db: Session = Depends(get_db)):
-    try:
-        with open("feedback_log.txt", "a") as f:
-            f.write(f"{datetime.utcnow()} - {user.username}:\n{entry.feedback}\n\n")
-        return {"message": "Feedback saved"}
-    except Exception:
-        raise HTTPException(status_code=500, detail="Failed to save feedback")
-
-
+def submit_feedback(
+    entry: FeedbackEntry,
+    db: Session = Depends(get_db),
+    user = Depends(get_current_user)
+):
+    feedback = Feedback(user_id=user["id"], content=entry.feedback)
+    db.add(feedback)
+    db.commit()
+    return {"message": "Feedback saved"}
 
 @router.get("/feedback/export")
-async def download_feedback(user=Depends(get_current_user)):
-    if user.username != "test@test.com":
+def export_feedback(
+    db: Session = Depends(get_db),
+    user = Depends(get_current_user)
+):
+    if user["username"] != "test@test.com":  # secure with your admin user
         raise HTTPException(status_code=403, detail="Not authorized")
-    return FileResponse("/mnt/data/feedback_log.txt", filename="feedback_log.txt")
+
+    entries = db.query(Feedback).join(User).all()
+
+    return [
+        {
+            "username": entry.user.username,
+            "feedback": entry.content,
+            "timestamp": entry.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+        }
+        for entry in entries
+    ]
