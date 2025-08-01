@@ -25,6 +25,6 @@ async def submit_feedback(entry: FeedbackEntry, user=Depends(get_current_user), 
 
 @router.get("/feedback/export")
 async def download_feedback(user=Depends(get_current_user)):
-    if user.username != "thisisatest":
+    if user.username != "test@test.com":
         raise HTTPException(status_code=403, detail="Not authorized")
     return FileResponse("/mnt/data/feedback_log.txt", filename="feedback_log.txt")
