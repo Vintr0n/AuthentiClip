@@ -31,8 +31,8 @@ export default function VerifyEmail() {
   }, [navigate, searchParams]);
 
   return (
-    <div className="flex justify-center min-h-screen items-center bg-gradient-to-br from-sky-300 to-blue-600 text-white px-4">
-      <div className="w-full sm:max-w-xl bg-[#0e131f] border border-slate-700 p-10 rounded-xl shadow-lg text-center">
+    <div className="flex justify-center min-h-screen overflow-y-auto items-start mt-10 px-4">
+      <div className="w-full sm:max-w-xl bg-[#0e131f] border border-slate-700 p-10 rounded-xl shadow-lg text-white">
         <img src={logo} alt="ClipCert Logo" className="w-28 mx-auto mb-6 motion-safe:animate-pulse" />
         {error ? (
           <p className="text-red-400 text-lg">{error}</p>
