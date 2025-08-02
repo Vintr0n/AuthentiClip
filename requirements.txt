@@ -7,3 +7,4 @@ imagehash
 opencv-python-headless
 pillow
 python-multipart
+fastapi-mail

@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/AuthContext';
 import logo from '../assets/logo-squared.png';
 
-
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -28,7 +27,14 @@ export default function Login() {
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.detail || 'Login failed');
+
+      if (response.status === 403) {
+        throw new Error('Please verify your email before logging in.');
+      }
+
+      if (!response.ok) {
+        throw new Error(data.detail || 'Login failed');
+      }
 
       localStorage.setItem('access_token', data.access_token);
       await refreshAuth();
@@ -41,9 +47,9 @@ export default function Login() {
   };
 
   return (
-      <div className="flex justify-center min-h-screen overflow-y-auto items-start mt-10 px-4">
-        <div className="w-full sm:max-w-xl bg-[#0e131f] border border-slate-700 p-10 rounded-xl shadow-lg text-white">
-        <form onSubmit={handleLogin} className="flex flex-col justify-between h-[520px]">
+    <div className="flex justify-center min-h-screen overflow-y-auto items-start mt-10 px-4">
+      <div className="w-full sm:max-w-xl bg-[#0e131f] border border-slate-700 p-10 rounded-xl shadow-lg text-white">
+        <form onSubmit={handleLogin} className="flex flex-col justify-between h-auto">
           <div>
             <h2 className="text-2xl font-bold mb-6 text-center">Welcome Back</h2>
 
@@ -81,12 +87,12 @@ export default function Login() {
               </div>
             )}
           </div>
-		  
-<img
-  src={logo}
-  alt="ClipCert Logo"
-  className="w-40 mx-auto mt-6 motion-safe:animate-pulse"
-/>
+
+          <img
+            src={logo}
+            alt="ClipCert Logo"
+            className="w-40 mx-auto mt-6 motion-safe:animate-pulse"
+          />
 
           <p className="text-sm text-center text-gray-300 mt-6">
             Don’t have an account?{' '}

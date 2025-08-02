@@ -1,11 +1,9 @@
 # Updated models.py to add Session table for user authentication
-from sqlalchemy import Column, Integer, LargeBinary, ForeignKey, String, Text, DateTime
+from sqlalchemy import Column, Integer, LargeBinary, ForeignKey, String, Text, DateTime, Boolean
 from sqlalchemy.orm import relationship
 from app.database import Base
 from uuid import uuid4
 from datetime import datetime
-
-
 
 from datetime import datetime, timedelta
 import uuid
@@ -18,6 +16,8 @@ class User(Base):
     hashed_password = Column(String)
     private_key = Column(LargeBinary, nullable=True)
     public_key = Column(LargeBinary, nullable=True)
+    email_verified = Column(Boolean, default=False)  # NEW
+    verification_token = Column(String, unique=True, nullable=True)  # NEW
 
     bundles = relationship("SignedBundle", back_populates="user")
     sessions = relationship("Session", back_populates="user")

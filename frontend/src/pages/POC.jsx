@@ -60,7 +60,7 @@ export default function POC() {
   Frame order or trimming does not impact verification, but encoding changes, filters, or added scenes can reduce the score. The system is designed to be resilient to technical variations while flagging meaningful edits.
 </li>
 <li>
-  This is still a work in progress, the aim of this POS is to test it's feasability and whether or not the concept works in the real world. Technical aspects of the approach has been scaled back for maintainability and costs
+  This is still a work in progress, the aim of this POC is to test it's feasability and whether or not the concept works in the real world. Technical aspects of the approach has been scaled back for maintainability and costs
 </li>
           </ul>
         </div>
