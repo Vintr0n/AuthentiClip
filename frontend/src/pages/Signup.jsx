@@ -7,6 +7,7 @@ export default function Signup() {
   const [password, setPassword] = useState('');
   const [password2, setPassword2] = useState('');
   const [error, setError] = useState(null);
+  const [message, setMessage] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -24,6 +25,7 @@ export default function Signup() {
   const handleSignup = async (e) => {
     e.preventDefault();
     setError(null);
+    setMessage(null);
 
     if (password !== password2) {
       setError('Passwords do not match.');
@@ -51,8 +53,8 @@ export default function Signup() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.detail || 'Signup failed');
 
-      alert('Signup successful! Check your email to verify your account.');
-      navigate('/login');
+      setMessage('Signup successful! Check your email to verify your account.');
+      setTimeout(() => navigate('/login'), 1000);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -95,6 +97,7 @@ export default function Signup() {
             />
 
             {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
+            {message && <p className="text-green-400 text-sm mb-4">{message}</p>}
 
             <button
               type="submit"

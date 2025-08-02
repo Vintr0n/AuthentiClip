@@ -37,7 +37,12 @@ async def send_verification_email(email: str, token: str):
     message = MessageSchema(
         subject="Verify your ClipCert account",
         recipients=[email],
-        body=f"Click this link to verify your email: https://yourdomain.com/verify-email?token={token}",
+        body=(
+    "Thanks for joining the ClipCert Proof of Concept.\n\n"
+    f"To get started, please verify your email address by clicking the link below:\n\n"
+    f"https://clipcert.com/verify-email?token={token}\n\n"
+    "If you did not sign up for this account, you can ignore this message."
+),
         subtype="plain"
     )
     fm = FastMail(conf)
