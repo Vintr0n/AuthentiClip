@@ -15,7 +15,7 @@ export default function Signup() {
   const passwordIsValid = (password) => {
     const minLength = 8;
     const hasNumber = /\d/;
-    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/;
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>-]/;
     return (
       password.length >= minLength &&
       hasNumber.test(password) &&
