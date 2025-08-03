@@ -10,7 +10,7 @@ import UploadVideo from './pages/UploadVideo';
 import Verify from './pages/Verify';
 import Feedback from './pages/Feedback';
 import VerifyEmail from './pages/VerifyEmail';
-
+import FAQ from './pages/FAQ';
 
 export default function App() {
   return (
@@ -24,7 +24,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
-
+<Route path="/FAQ" element={<FAQ />} />
 
           <Route
             path="/upload"

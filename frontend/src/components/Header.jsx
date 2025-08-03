@@ -59,6 +59,7 @@ export default function Header() {
   )}
   <NavLink to="/about" className={navLinkClass} onClick={() => setMenuOpen(false)}>About</NavLink>
   <NavLink to="/POC" className={navLinkClass} onClick={() => setMenuOpen(false)}>POC</NavLink>
+<NavLink to="/FAQ" className={navLinkClass} onClick={() => setMenuOpen(false)}>FAQ</NavLink>
   {user && (
     <>
       <NavLink to="/upload" className={navLinkClass} onClick={() => setMenuOpen(false)}>Upload</NavLink>
@@ -105,6 +106,7 @@ export default function Header() {
           )}
           <NavLink to="/about" className={navLinkClass}>About</NavLink>
           <NavLink to="/POC" className={navLinkClass}>POC</NavLink>
+<NavLink to="/FAQ" className={navLinkClass}>FAQ</NavLink>
           {user && (
             <>
               <NavLink to="/upload" className={navLinkClass}>Upload</NavLink>
