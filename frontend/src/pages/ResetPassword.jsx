@@ -6,16 +6,42 @@ export default function ResetPassword() {
   const token = params.get("token");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+
+  const passwordIsValid = (password) => {
+    const minLength = 8;
+    const hasNumber = /\d/;
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>-]/;
+    return (
+      password.length >= minLength &&
+      hasNumber.test(password) &&
+      hasSpecial.test(password)
+    );
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-const res = await fetch("https://video-auth-serverside.onrender.com/auth/reset-password", {
-  method: "POST",
-  headers: { "Content-Type": "application/x-www-form-urlencoded" },
-  body: new URLSearchParams({ token, password }),
-});
+    setError("");
+    setMessage("");
+
+    if (!passwordIsValid(password)) {
+      setError(
+        "Password must be at least 8 characters long and include at least one number and one special character."
+      );
+      return;
+    }
+
+    const res = await fetch("https://video-auth-serverside.onrender.com/auth/reset-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ token, password }),
+    });
     const data = await res.json();
-    setMessage(data.message || data.detail || "Something went wrong.");
+    if (res.ok) {
+      setMessage(data.message);
+    } else {
+      setError(data.detail || "Something went wrong.");
+    }
   };
 
   return (
@@ -37,7 +63,8 @@ const res = await fetch("https://video-auth-serverside.onrender.com/auth/reset-p
           >
             Reset Password
           </button>
-          {message && <p className="mt-4">{message}</p>}
+          {error && <p className="text-red-400 mt-4">{error}</p>}
+          {message && <p className="text-green-400 mt-4">{message}</p>}
         </form>
       </div>
     </div>
