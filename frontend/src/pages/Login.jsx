@@ -38,7 +38,7 @@ export default function Login() {
 
       localStorage.setItem('access_token', data.access_token);
       await refreshAuth();
-      navigate('/upload');
+      navigate('/poc');
     } catch (err) {
       setError(err.message);
     } finally {
