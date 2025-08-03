@@ -187,8 +187,8 @@ async def send_reset_email(email: str, token: str):
 
 @router.post("/forgot-password")
 async def forgot_password(
+    background_tasks: BackgroundTasks,
     email: str = Form(...),
-    background_tasks: BackgroundTasks = Depends(),
     db: Session = Depends(get_db)
 ):
     user = db.query(User).filter(User.username == email).first()
@@ -202,6 +202,7 @@ async def forgot_password(
 
     background_tasks.add_task(send_reset_email, email, token)
     return {"message": "Password reset email sent."}
+
 
 
 @router.post("/reset-password")
