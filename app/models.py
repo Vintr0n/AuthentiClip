@@ -64,6 +64,8 @@ class Feedback(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     content = Column(Text, nullable=False)
+    rating = Column(Integer, nullable=True) 
     timestamp = Column(DateTime, default=datetime.utcnow)
 
     user = relationship("User", back_populates="feedback_entries")
+

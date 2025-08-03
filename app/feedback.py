@@ -10,6 +10,7 @@ router = APIRouter()
 
 class FeedbackEntry(BaseModel):
     feedback: str
+    rating: int | None = None  # <-- ADD THIS
 
 @router.post("/feedback")
 def submit_feedback(
@@ -17,7 +18,7 @@ def submit_feedback(
     db: Session = Depends(get_db),
     user = Depends(get_current_user)
 ):
-    feedback = Feedback(user_id=user.id, content=entry.feedback)
+    feedback = Feedback(user_id=user.id, content=entry.feedback, rating=entry.rating)  # <-- UPDATE
     db.add(feedback)
     db.commit()
     return {"message": "Feedback saved"}
@@ -36,6 +37,7 @@ def export_feedback(
         {
             "username": entry.user.username,
             "feedback": entry.content,
+            "rating": entry.rating,
             "timestamp": entry.timestamp.strftime("%Y-%m-%d %H:%M:%S")
         }
         for entry in entries
