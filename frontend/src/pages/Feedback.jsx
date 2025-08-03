@@ -55,22 +55,31 @@ export default function Feedback() {
             className="w-full mb-4 px-4 py-2 rounded bg-black border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
           />
 
-          <label className="block mb-2 text-sm mt-4">If ClipCert were scaled beyond its current limitations (e.g., 10-second max, MP4-only), how valuable do you think it would be in real-world scenarios?</label>
-          <div className="flex justify-between text-sm mb-4">
-            {[0, 1, 2, 3, 4].map((val) => (
-              <label key={val} className="flex flex-col items-center">
-                <input
-                  type="radio"
-                  name="rating"
-                  value={val}
-                  checked={rating === val}
-                  onChange={() => setRating(val)}
-                  className="mb-1"
-                />
-                {val}
-              </label>
-            ))}
-          </div>
+         <label className="block mb-2 text-sm mt-4">
+  If ClipCert were scaled beyond its current limitations (e.g., 10-second max, MP4-only), how valuable do you think it would be in real-world scenarios?
+</label>
+<div className="flex justify-between text-sm mb-4">
+  {[
+    { val: 1, label: "Not valuable" },
+    { val: 2, label: "Limited value" },
+    { val: 3, label: "Useful in some cases" },
+    { val: 4, label: "Very useful" },
+    { val: 5, label: "Game changer" }
+  ].map(({ val, label }) => (
+    <label key={val} className="flex flex-col items-center text-center mx-1">
+      <input
+        type="radio"
+        name="rating"
+        value={val}
+        checked={rating === val}
+        onChange={() => setRating(val)}
+        className="mb-1"
+      />
+      <span className="text-xs">{label}</span>
+    </label>
+  ))}
+</div>
+
 
           <button
             type="submit"
