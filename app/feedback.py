@@ -10,7 +10,7 @@ router = APIRouter()
 
 class FeedbackEntry(BaseModel):
     feedback: str
-    rating: int | None = None  # <-- ADD THIS
+    rating: int | None = None
 
 @router.post("/feedback")
 def submit_feedback(
@@ -18,7 +18,7 @@ def submit_feedback(
     db: Session = Depends(get_db),
     user = Depends(get_current_user)
 ):
-    feedback = Feedback(user_id=user.id, content=entry.feedback, rating=entry.rating)  # <-- UPDATE
+    feedback = Feedback(user_id=user.id, content=entry.feedback, rating=entry.rating)
     db.add(feedback)
     db.commit()
     return {"message": "Feedback saved"}
@@ -28,7 +28,7 @@ def export_feedback(
     db: Session = Depends(get_db),
     user = Depends(get_current_user)
 ):
-    if user.username != "test@test.com":
+    if user.username != "noreply@clipcert.com":
         raise HTTPException(status_code=403, detail="Not authorized")
 
     entries = db.query(Feedback).join(User).all()
