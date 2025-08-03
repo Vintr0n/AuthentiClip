@@ -23,6 +23,8 @@ class User(Base):
     sessions = relationship("Session", back_populates="user")
     feedback_entries = relationship("Feedback", back_populates="user", cascade="all, delete-orphan")
     upload_history = relationship("UploadHistory", back_populates="user", cascade="all, delete-orphan")
+    reset_token = Column(String, unique=True, nullable=True)
+    reset_token_expires = Column(DateTime, nullable=True)
 
 
 class SignedBundle(Base):
@@ -68,4 +70,6 @@ class Feedback(Base):
     timestamp = Column(DateTime, default=datetime.utcnow)
 
     user = relationship("User", back_populates="feedback_entries")
+
+
 

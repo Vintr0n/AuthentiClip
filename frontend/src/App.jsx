@@ -11,6 +11,8 @@ import Verify from './pages/Verify';
 import Feedback from './pages/Feedback';
 import VerifyEmail from './pages/VerifyEmail';
 import FAQ from './pages/FAQ';
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 export default function App() {
   return (
@@ -25,6 +27,8 @@ export default function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
 <Route path="/FAQ" element={<FAQ />} />
+<Route path="/forgot-password" element={<ForgotPassword />} />
+<Route path="/reset-password" element={<ResetPassword />} />
 
           <Route
             path="/upload"
