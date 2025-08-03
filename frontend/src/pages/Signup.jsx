@@ -1,15 +1,16 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from '../assets/logo-squared.png';
 
 export default function Signup() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [password2, setPassword2] = useState('');
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+  const password2Ref = useRef(null);
 
   const passwordIsValid = (password) => {
     const minLength = 8;
@@ -26,6 +27,10 @@ export default function Signup() {
     e.preventDefault();
     setError(null);
     setMessage(null);
+
+    const email = emailRef.current.value.trim();
+    const password = passwordRef.current.value;
+    const password2 = password2Ref.current.value;
 
     if (password !== password2) {
       setError('Passwords do not match.');
@@ -53,8 +58,8 @@ export default function Signup() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.detail || 'Signup failed');
 
-      setMessage('Signup successful! Check your emails including junk mail to verify your account. Redirecting you to login page...');
-      setTimeout(() => navigate('/login'), 7000);
+      setMessage('Signup successful! Check your email to verify your account.');
+      setTimeout(() => navigate('/login'), 1000);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -70,28 +75,31 @@ export default function Signup() {
             <h2 className="text-2xl font-bold mb-6 text-center">Create an Account</h2>
 
             <input
+              ref={emailRef}
+              name="email"
               type="email"
+              autoComplete="email"
               placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full px-4 py-3 mb-4 border border-gray-600 rounded-full bg-black text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
 
             <input
+              ref={passwordRef}
+              name="password"
               type="password"
+              autoComplete="new-password"
               placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
               required
               className="w-full px-4 py-3 mb-4 border border-gray-600 rounded-full bg-black text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
 
             <input
+              ref={password2Ref}
+              name="confirm-password"
               type="password"
+              autoComplete="new-password"
               placeholder="Confirm Password"
-              value={password2}
-              onChange={(e) => setPassword2(e.target.value)}
               required
               className="w-full px-4 py-3 mb-6 border border-gray-600 rounded-full bg-black text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
