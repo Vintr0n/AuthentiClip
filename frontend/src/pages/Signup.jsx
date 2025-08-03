@@ -53,8 +53,8 @@ export default function Signup() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.detail || 'Signup failed');
 
-      setMessage('Signup successful! Check your email to verify your account.');
-      setTimeout(() => navigate('/login'), 1000);
+      setMessage('Signup successful! Check your emails including junk mail to verify your account. Redirecting you to login page...');
+      setTimeout(() => navigate('/login'), 7000);
     } catch (err) {
       setError(err.message);
     } finally {
