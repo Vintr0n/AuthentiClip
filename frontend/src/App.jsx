@@ -13,6 +13,7 @@ import VerifyEmail from './pages/VerifyEmail';
 import FAQ from './pages/FAQ';
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import Contact from "./pages/Contact";
 
 export default function App() {
   return (
@@ -29,6 +30,7 @@ export default function App() {
 <Route path="/FAQ" element={<FAQ />} />
 <Route path="/forgot-password" element={<ForgotPassword />} />
 <Route path="/reset-password" element={<ResetPassword />} />
+<Route path="/contact" element={<Contact />} />
 
           <Route
             path="/upload"
