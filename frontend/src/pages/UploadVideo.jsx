@@ -33,8 +33,9 @@ const handleFileChange = (e) => {
   if (!selectedFile) return;
 
   // Limit file size to 30MB
-  if (selectedFile.size > 30 * 1024 * 1024) {
-    setMessage('File is too large. Maximum allowed size is 30MB.');
+  //Increased to 50
+  if (selectedFile.size > 50 * 1024 * 1024) {
+    setMessage('File is too large. Maximum allowed size is 50MB.');
     setFile(null);
     return;
   }
