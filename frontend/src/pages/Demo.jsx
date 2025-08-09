@@ -1,5 +1,7 @@
 // frontend/src/pages/Demo.jsx
 import useIsMobile from '../hooks/useIsMobile';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Demo() {
   const isMobile = useIsMobile(); // returns true if width < 768
@@ -27,8 +29,18 @@ export default function Demo() {
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
           />
+		  
+
         </div>
+
+
       </div>
+	            <p className="text-sm text-center text-white-300 mt-6">
+  <Link to="/Signup" className="underline hover:text-cyan-300">
+    Signup for the Proof-Of-Concept 
+  </Link>	
+</p> 
+
     </div>
   );
 }
