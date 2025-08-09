@@ -14,6 +14,7 @@ import FAQ from './pages/FAQ';
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Contact from "./pages/Contact";
+import Demo from "./pages/Demo";
 
 export default function App() {
   return (
@@ -21,7 +22,7 @@ export default function App() {
       <Header />
       <main className="flex-grow flex justify-center items-center px-4">
         <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/" element={<Navigate to="/demo" replace />} />
           <Route path="/about" element={<About />} />
           <Route path="/poc" element={<POC />} />
           <Route path="/login" element={<Login />} />
@@ -31,7 +32,7 @@ export default function App() {
 <Route path="/forgot-password" element={<ForgotPassword />} />
 <Route path="/reset-password" element={<ResetPassword />} />
 <Route path="/contact" element={<Contact />} />
-
+<Route path="/demo" element={<Demo />} />
           <Route
             path="/upload"
             element={
