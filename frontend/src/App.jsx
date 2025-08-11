@@ -23,7 +23,7 @@ export default function App() {
       <Header />
       <main className="flex-grow flex justify-center items-center px-4">
         <Routes>
-          <Route path="/" element={<Navigate to="/demo" replace />} />
+          <Route path="/" element={<Navigate to="/about" replace />} />
           <Route path="/about" element={<About />} />
           <Route path="/poc" element={<POC />} />
           <Route path="/login" element={<Login />} />
