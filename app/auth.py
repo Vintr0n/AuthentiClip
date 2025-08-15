@@ -203,6 +203,9 @@ async def forgot_password(
     background_tasks.add_task(send_reset_email, email, token)
     return {"message": "Password reset email sent."}
 
+@router.get("/health")
+def health_check():
+    return {"status": "ok"}
 
 
 @router.post("/reset-password")
