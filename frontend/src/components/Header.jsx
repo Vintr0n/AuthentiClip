@@ -79,10 +79,10 @@ navigate("/login", { state: { from: path } });
               <NavLink to="/POC" className={navLinkClass} onClick={() => setMenuOpen(false)}>POC</NavLink>
               <NavLink to="/FAQ" className={navLinkClass} onClick={() => setMenuOpen(false)}>FAQ</NavLink>
               <NavLink to="/demo" className={navLinkClass} onClick={() => setMenuOpen(false)}>Demo</NavLink>
-              <NavLink to="/contact" className={navLinkClass} onClick={() => setMenuOpen(false)}>Contact</NavLink>
               <NavLink to="/upload" className={navLinkClass} onClick={(e) => { handleProtectedClick(e, "/upload"); setMenuOpen(false); }}>Upload</NavLink>
               <NavLink to="/verify" className={navLinkClass} onClick={(e) => { handleProtectedClick(e, "/verify"); setMenuOpen(false); }}>Verify</NavLink>
               <NavLink to="/feedback" className={navLinkClass} onClick={(e) => { handleProtectedClick(e, "/feedback"); setMenuOpen(false); }}>Feedback</NavLink>
+			                <NavLink to="/contact" className={navLinkClass} onClick={() => setMenuOpen(false)}>Contact</NavLink>
             </nav>
 
             {user && (
@@ -122,10 +122,11 @@ navigate("/login", { state: { from: path } });
           <NavLink to="/POC" className={navLinkClass}>POC</NavLink>
           <NavLink to="/FAQ" className={navLinkClass}>FAQ</NavLink>
           <NavLink to="/demo" className={navLinkClass}>Demo</NavLink>
-          <NavLink to="/contact" className={navLinkClass}>Contact</NavLink>
+
           <NavLink to="/upload" className={navLinkClass} onClick={(e) => handleProtectedClick(e, "/upload")}>Upload</NavLink>
           <NavLink to="/verify" className={navLinkClass} onClick={(e) => handleProtectedClick(e, "/verify")}>Verify</NavLink>
           <NavLink to="/feedback" className={navLinkClass} onClick={(e) => handleProtectedClick(e, "/feedback")}>Feedback</NavLink>
+		            <NavLink to="/contact" className={navLinkClass}>Contact</NavLink>
         </nav>
       </div>
 
