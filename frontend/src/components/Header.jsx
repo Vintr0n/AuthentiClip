@@ -20,23 +20,27 @@ export default function Header() {
     navigate('/login');
   };
 
+  const handleProtectedClick = (e, path) => {
+    if (!user) {
+      e.preventDefault();
+      navigate("/login", { state: { from: path } });
+    }
+  };
+
   const navLinkClass = ({ isActive }) =>
     `px-4 py-2 rounded-full text-sm font-medium transition ${
       isActive ? 'bg-accent text-white' : 'text-white hover:bg-gray-700/60'
     }`;
 
-
   if (isMobile) {
     return (
       <header className="w-full bg-gray-900 px-4 py-3 text-white relative z-50">
         <div className="flex items-center justify-between">
-          {/* Logo */}
           <div className="flex items-center space-x-2">
             <img src="/logo.png" alt="Logo" className="w-8 h-8" />
             <h1 className="text-lg font-bold">ClipCert</h1>
           </div>
 
-          {/* Hamburger button */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
             className="focus:outline-none border p-2 rounded-md border-white"
@@ -47,42 +51,35 @@ export default function Header() {
           </button>
         </div>
 
-        {/* Dropdown Menu */}
         {menuOpen && (
           <div className="mt-3 bg-gray-800 rounded-lg p-4 space-y-2 shadow-lg absolute left-4 right-4 top-full">
-<nav className="flex flex-col gap-2">
-  {!user && (
-    <>
-      <NavLink to="/login" className={navLinkClass} onClick={() => setMenuOpen(false)}>Login</NavLink>
-      <NavLink to="/signup" className={navLinkClass} onClick={() => setMenuOpen(false)}>Signup</NavLink>
-    </>
-  )}
-  <NavLink to="/about" className={navLinkClass} onClick={() => setMenuOpen(false)}>About</NavLink>
-  <NavLink to="/POC" className={navLinkClass} onClick={() => setMenuOpen(false)}>POC</NavLink>
-<NavLink to="/FAQ" className={navLinkClass} onClick={() => setMenuOpen(false)}>FAQ</NavLink>
-<NavLink to="/demo" className={navLinkClass} onClick={() => setMenuOpen(false)}>Demo</NavLink>
-<NavLink to="/contact" className={navLinkClass} onClick={() => setMenuOpen(false)}>Contact</NavLink>
-  {user && (
-    <>
-      <NavLink to="/upload" className={navLinkClass} onClick={() => setMenuOpen(false)}>Upload</NavLink>
-      <NavLink to="/verify" className={navLinkClass} onClick={() => setMenuOpen(false)}>Verify</NavLink>
-      <NavLink to="/feedback" className={navLinkClass} onClick={() => setMenuOpen(false)}>Feedback</NavLink>
-    </>
-  )}
-</nav>
-
+            <nav className="flex flex-col gap-2">
+              {!user && (
+                <>
+                  <NavLink to="/login" className={navLinkClass} onClick={() => setMenuOpen(false)}>Login</NavLink>
+                  <NavLink to="/signup" className={navLinkClass} onClick={() => setMenuOpen(false)}>Signup</NavLink>
+                </>
+              )}
+              <NavLink to="/about" className={navLinkClass} onClick={() => setMenuOpen(false)}>About</NavLink>
+              <NavLink to="/POC" className={navLinkClass} onClick={() => setMenuOpen(false)}>POC</NavLink>
+              <NavLink to="/FAQ" className={navLinkClass} onClick={() => setMenuOpen(false)}>FAQ</NavLink>
+              <NavLink to="/demo" className={navLinkClass} onClick={() => setMenuOpen(false)}>Demo</NavLink>
+              <NavLink to="/contact" className={navLinkClass} onClick={() => setMenuOpen(false)}>Contact</NavLink>
+              <NavLink to="/upload" className={navLinkClass} onClick={(e) => { handleProtectedClick(e, "/upload"); setMenuOpen(false); }}>Upload</NavLink>
+              <NavLink to="/verify" className={navLinkClass} onClick={(e) => { handleProtectedClick(e, "/verify"); setMenuOpen(false); }}>Verify</NavLink>
+              <NavLink to="/feedback" className={navLinkClass} onClick={(e) => { handleProtectedClick(e, "/feedback"); setMenuOpen(false); }}>Feedback</NavLink>
+            </nav>
 
             {user && (
-              <div className="text-xs text-gray-300 text-center">Hello, {user}</div>
-            )}
-
-            {user && (
-              <button
-                onClick={handleLogout}
-                className="w-full py-1 text-sm bg-red-600 rounded-full hover:bg-red-700"
-              >
-                Logout
-              </button>
+              <>
+                <div className="text-xs text-gray-300 text-center">Hello, {user}</div>
+                <button
+                  onClick={handleLogout}
+                  className="w-full py-1 text-sm bg-red-600 rounded-full hover:bg-red-700"
+                >
+                  Logout
+                </button>
+              </>
             )}
           </div>
         )}
@@ -90,7 +87,7 @@ export default function Header() {
     );
   }
 
-  // Desktop layout (unchanged)
+  // Desktop layout
   return (
     <header className="relative w-full px-6 py-4 flex items-center justify-between">
       <div className="flex items-center space-x-2 absolute left-6 top-1/2 transform -translate-y-1/2">
@@ -108,17 +105,12 @@ export default function Header() {
           )}
           <NavLink to="/about" className={navLinkClass}>About</NavLink>
           <NavLink to="/POC" className={navLinkClass}>POC</NavLink>
-<NavLink to="/FAQ" className={navLinkClass}>FAQ</NavLink>
-<NavLink to="/demo" className={navLinkClass}>Demo</NavLink>
-<NavLink to="/contact" className={navLinkClass}>Contact</NavLink>
-
-          {user && (
-            <>
-              <NavLink to="/upload" className={navLinkClass}>Upload</NavLink>
-              <NavLink to="/verify" className={navLinkClass}>Verify</NavLink>
-              <NavLink to="/feedback" className={navLinkClass}>Feedback</NavLink>
-            </>
-          )}
+          <NavLink to="/FAQ" className={navLinkClass}>FAQ</NavLink>
+          <NavLink to="/demo" className={navLinkClass}>Demo</NavLink>
+          <NavLink to="/contact" className={navLinkClass}>Contact</NavLink>
+          <NavLink to="/upload" className={navLinkClass} onClick={(e) => handleProtectedClick(e, "/upload")}>Upload</NavLink>
+          <NavLink to="/verify" className={navLinkClass} onClick={(e) => handleProtectedClick(e, "/verify")}>Verify</NavLink>
+          <NavLink to="/feedback" className={navLinkClass} onClick={(e) => handleProtectedClick(e, "/feedback")}>Feedback</NavLink>
         </nav>
       </div>
 
