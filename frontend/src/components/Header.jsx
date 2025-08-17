@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import useIsMobile from '../hooks/useIsMobile';
@@ -7,7 +7,8 @@ export default function Header() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const [menuOpen, setMenuOpen] = useState(false); 
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [message, setMessage] = useState('');
 
   const handleLogout = async () => {
     const token = localStorage.getItem('access_token');
@@ -23,9 +24,18 @@ export default function Header() {
   const handleProtectedClick = (e, path) => {
     if (!user) {
       e.preventDefault();
-      navigate("/login", { state: { from: path } });
+      setMessage("Please login first");
+	  
+navigate("/login", { state: { from: path } });
     }
   };
+
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => setMessage(''), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
 
   const navLinkClass = ({ isActive }) =>
     `px-4 py-2 rounded-full text-sm font-medium transition ${
@@ -40,7 +50,6 @@ export default function Header() {
             <img src="/logo.png" alt="Logo" className="w-8 h-8" />
             <h1 className="text-lg font-bold">ClipCert</h1>
           </div>
-
           <button
             onClick={() => setMenuOpen(!menuOpen)}
             className="focus:outline-none border p-2 rounded-md border-white"
@@ -50,6 +59,12 @@ export default function Header() {
             <div className="w-5 h-0.5 bg-white" />
           </button>
         </div>
+
+        {message && (
+          <div className="mt-2 bg-yellow-200 text-black text-sm py-2 px-4 rounded text-center">
+            {message}
+          </div>
+        )}
 
         {menuOpen && (
           <div className="mt-3 bg-gray-800 rounded-lg p-4 space-y-2 shadow-lg absolute left-4 right-4 top-full">
@@ -113,6 +128,12 @@ export default function Header() {
           <NavLink to="/feedback" className={navLinkClass} onClick={(e) => handleProtectedClick(e, "/feedback")}>Feedback</NavLink>
         </nav>
       </div>
+
+      {message && (
+        <div className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 bg-yellow-200 text-black text-sm py-2 px-4 rounded shadow-md z-50">
+          {message}
+        </div>
+      )}
 
       <div className="absolute right-6 top-1/2 transform -translate-y-1/2 flex items-center space-x-4">
         {user && (
