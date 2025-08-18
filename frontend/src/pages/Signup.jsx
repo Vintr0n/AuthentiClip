@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from '../assets/logo-squared.png';
 
@@ -59,7 +59,6 @@ export default function Signup() {
       if (!response.ok) throw new Error(data.detail || 'Signup failed');
 
       setMessage('Signup successful! Check your email to verify your account.');
-      setTimeout(() => navigate('/login'), 1000);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -67,10 +66,34 @@ export default function Signup() {
     }
   };
 
+
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => {
+        setMessage(null);
+        navigate('/login');
+      }, 7000);
+      return () => clearTimeout(timer);
+    }
+  }, [message, navigate]);
+
   return (
     <div className="flex justify-center min-h-screen overflow-y-auto items-start mt-10 px-4">
       <div className="w-full sm:max-w-xl bg-[#0e131f] border border-slate-700 p-10 rounded-xl shadow-lg text-white">
         <form onSubmit={handleSignup} className="flex flex-col justify-between h-auto">
+
+          {message && (
+            <div className="mb-6 bg-green-200 text-green-800 text-sm px-4 py-2 rounded text-center">
+              {message}
+            </div>
+          )}
+
+          {error && (
+            <div className="mb-6 bg-red-200 text-red-800 text-sm px-4 py-2 rounded text-center">
+              {error}
+            </div>
+          )}
+
           <div>
             <h2 className="text-2xl font-bold mb-6 text-center">Create an Account</h2>
 
@@ -103,9 +126,6 @@ export default function Signup() {
               required
               className="w-full px-4 py-3 mb-6 border border-gray-600 rounded-full bg-black text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-
-            {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
-            {message && <p className="text-green-400 text-sm mb-4">{message}</p>}
 
             <button
               type="submit"
