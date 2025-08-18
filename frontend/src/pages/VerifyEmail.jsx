@@ -13,6 +13,7 @@ export default function VerifyEmail() {
 
     if (!token) {
       setError('Missing verification token.');
+      setMessage(null);
       return;
     }
 
@@ -23,21 +24,41 @@ export default function VerifyEmail() {
           throw new Error(data.detail || 'Verification failed.');
         }
         setMessage('Email verified. You may now log in.');
-        setTimeout(() => navigate('/login'), 1500);
       })
       .catch((err) => {
+        setMessage(null);
         setError(err.message || 'Verification error');
       });
-  }, [navigate, searchParams]);
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (message === 'Email verified. You may now log in.') {
+      const timer = setTimeout(() => {
+        navigate('/login');
+      }, 7000);
+      return () => clearTimeout(timer);
+    }
+  }, [message, navigate]);
 
   return (
     <div className="flex justify-center min-h-screen overflow-y-auto items-start mt-10 px-4">
       <div className="w-full sm:max-w-xl bg-[#0e131f] border border-slate-700 p-10 rounded-xl shadow-lg text-white">
-        <img src={logo} alt="ClipCert Logo" className="w-28 mx-auto mb-6 motion-safe:animate-pulse" />
-        {error ? (
-          <p className="text-red-400 text-lg">{error}</p>
-        ) : (
-          <p className="text-green-400 text-lg">{message}</p>
+        <img
+          src={logo}
+          alt="ClipCert Logo"
+          className="w-28 mx-auto mb-6 motion-safe:animate-pulse"
+        />
+
+        {message && (
+          <div className="mb-6 bg-green-200 text-green-800 text-sm px-4 py-2 rounded text-center">
+            {message}
+          </div>
+        )}
+
+        {error && (
+          <div className="mb-6 bg-red-200 text-red-800 text-sm px-4 py-2 rounded text-center">
+            {error}
+          </div>
         )}
       </div>
     </div>
