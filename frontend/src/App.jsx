@@ -15,6 +15,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Demo from "./pages/Demo";
 import Contact from "./pages/Contact";
+import VerifyVideo from "./pages/VerifyVideo";
 
 
 export default function App() {
@@ -29,6 +30,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
+		  <Route path="/verifyvideo" element={<VerifyVideo />} />
 <Route path="/FAQ" element={<FAQ />} />
 <Route path="/forgot-password" element={<ForgotPassword />} />
 <Route path="/reset-password" element={<ResetPassword />} />

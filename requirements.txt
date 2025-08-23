@@ -8,3 +8,4 @@ opencv-python-headless
 pillow
 python-multipart
 fastapi-mail
+yt-dlp==2024.8.6
