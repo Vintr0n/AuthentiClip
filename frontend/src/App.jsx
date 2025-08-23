@@ -13,7 +13,6 @@ import VerifyEmail from './pages/VerifyEmail';
 import FAQ from './pages/FAQ';
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
-//import Demo from "./pages/Demo";
 import Contact from "./pages/Contact";
 import VerifyVideo from "./pages/VerifyVideo";
 
@@ -34,7 +33,6 @@ export default function App() {
 <Route path="/FAQ" element={<FAQ />} />
 <Route path="/forgot-password" element={<ForgotPassword />} />
 <Route path="/reset-password" element={<ResetPassword />} />
-//<Route path="/demo" element={<Demo />} />
 <Route path="/contact" element={<Contact />} />
 
           <Route
