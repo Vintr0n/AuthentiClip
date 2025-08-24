@@ -15,7 +15,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Contact from "./pages/Contact";
 import VerifyVideo from "./pages/VerifyVideo";
-
+import Landing from "./pages/Landing";
 
 export default function App() {
   return (
@@ -34,6 +34,7 @@ export default function App() {
 <Route path="/forgot-password" element={<ForgotPassword />} />
 <Route path="/reset-password" element={<ResetPassword />} />
 <Route path="/contact" element={<Contact />} />
+<Route path="/Landing" element={<Landing />} />
 
           <Route
             path="/upload"
