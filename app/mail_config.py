@@ -6,8 +6,8 @@ conf = ConnectionConfig(
     MAIL_FROM="noreply@clipcert.com",
     MAIL_PORT=587,
     MAIL_SERVER="smtp.ionos.com",
-    MAIL_STARTTLS=True,
-    MAIL_SSL_TLS=False,
+    MAIL_STARTTLS=False,
+    MAIL_SSL_TLS=True,
     USE_CREDENTIALS=True,
     VALIDATE_CERTS=True
 )
