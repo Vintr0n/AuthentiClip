@@ -11,17 +11,16 @@ def hash_password(password: str) -> str:
     """
     Hash a password using bcrypt.
     """
-    MAX_PASSWORD_LEN = 72
-    password = password[:MAX_PASSWORD_LEN]
-    return pwd_context.hash(password)
+    password_bytes = password.encode("utf-8")[:72]  # truncate by bytes
+    return pwd_context.hash(password_bytes.decode("utf-8", "ignore"))
+
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """
     Verify a plain password against a hashed one.
     """
-    MAX_PASSWORD_LEN = 72
-    plain_password = plain_password[:MAX_PASSWORD_LEN]
-    return pwd_context.verify(plain_password, hashed_password)
+    password_bytes = plain_password.encode("utf-8")[:72]
+    return pwd_context.verify(password_bytes.decode("utf-8", "ignore"), hashed_password)
 
 def generate_video_hashes(video_path: str, frame_interval: int = 2, region=(250, 250)) -> list[str]:
     """
