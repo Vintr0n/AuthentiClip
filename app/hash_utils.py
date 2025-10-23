@@ -11,8 +11,11 @@ def hash_password(password: str) -> str:
     """
     Hash a password using bcrypt.
     """
-    password_bytes = password.encode("utf-8")[:72]  # truncate by bytes
-    return pwd_context.hash(password_bytes.decode("utf-8", "ignore"))
+    # Truncate by bytes, not by characters
+    password_bytes = password.encode("utf-8")[:72]
+    # Decode to a safe string (latin1 preserves one-to-one byte values)
+    password_truncated = password_bytes.decode("latin1")
+    return pwd_context.hash(password_truncated)
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -20,7 +23,8 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     Verify a plain password against a hashed one.
     """
     password_bytes = plain_password.encode("utf-8")[:72]
-    return pwd_context.verify(password_bytes.decode("utf-8", "ignore"), hashed_password)
+    password_truncated = password_bytes.decode("latin1")
+    return pwd_context.verify(password_truncated, hashed_password)
 
 def generate_video_hashes(video_path: str, frame_interval: int = 2, region=(250, 250)) -> list[str]:
     """
