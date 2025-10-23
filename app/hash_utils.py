@@ -8,14 +8,16 @@ from passlib.context import CryptContext
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def hash_password(password: str) -> str:
-    password_bytes = password.encode("utf-8")[:72]
-    password_truncated = password_bytes.decode("utf-8", errors="ignore")
-    return pwd_context.hash(password_truncated)
+    """
+    Hash a password using bcrypt.
+    """
+    return pwd_context.hash(password)
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    password_bytes = plain_password.encode("utf-8")[:72]
-    password_truncated = password_bytes.decode("utf-8", errors="ignore")
-    return pwd_context.verify(password_truncated, hashed_password)
+    """
+    Verify a plain password against a hashed one.
+    """
+    return pwd_context.verify(plain_password, hashed_password)
 
 
 def generate_video_hashes(video_path: str, frame_interval: int = 2, region=(250, 250)) -> list[str]:
