@@ -1,12 +1,12 @@
-fastapi==0.116.1   # released 11 July 2025. :contentReference[oaicite:0]{index=0}
-uvicorn==0.30.0    # ~May 2024 release (0.30.0) :contentReference[oaicite:1]{index=1}
-sqlalchemy==2.0.41 # released 14 May 2025 :contentReference[oaicite:2]{index=2}
-passlib[bcrypt]==1.7.4 # version 1.7.4 in 2025 Fedora build. :contentReference[oaicite:3]{index=3}
-bcrypt==4.0.1      # recommended in issue for compatibility with passlib. :contentReference[oaicite:4]{index=4}
-cryptography==45.0.5 # released 2 July 2025. :contentReference[oaicite:5]{index=5}
-imagehash==3.5     # latest available info: version 3.5. :contentReference[oaicite:6]{index=6}
-opencv-python-headless==4.10.0. xx # approximate; exact version not located
-pillow==10.0.0     # approximate (major version around that time)
-python-multipart==0.0.18 # based on fact issue required ≥0.0.18. :contentReference[oaicite:7]{index=7}
-fastapi-mail==1.1.4 # approximate around that time
-yt-dlp==2025.07.21 # release 21 July 2025. :contentReference[oaicite:8]{index=8}
+fastapi==0.116.1
+uvicorn==0.30.0
+sqlalchemy==2.0.41
+passlib[bcrypt]==1.7.4
+bcrypt==4.0.1
+cryptography==45.0.5
+imagehash==3.5
+opencv-python-headless==4.12.0.88
+pillow==10.0.0
+python-multipart==0.0.18
+fastapi-mail==1.1.4
+yt-dlp==2024.8.6
