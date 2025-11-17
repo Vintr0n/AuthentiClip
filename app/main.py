@@ -5,7 +5,6 @@ from app.database import engine, Base
 from app.auth import router as auth_router
 from app.video import router as video_router
 from app.feedback import router as feedback_router
-from fastapi.responses import FileResponse
 
 
 app = FastAPI()
@@ -17,8 +16,7 @@ Base.metadata.create_all(bind=engine)
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(video_router, prefix="/video", tags=["video"])
 app.include_router(feedback_router, prefix="", tags=["feedback"])
-# NEW
-app.include_router(habits_router, prefix="/habits", tags=["habits"])
+
 
 
 # CORS middleware
@@ -30,6 +28,4 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/habit-tracker")
-def habit_page():
-    return FileResponse("app/static/habit.html")
+
