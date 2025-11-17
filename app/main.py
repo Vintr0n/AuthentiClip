@@ -5,6 +5,7 @@ from app.database import engine, Base
 from app.auth import router as auth_router
 from app.video import router as video_router
 from app.feedback import router as feedback_router
+from fastapi.responses import FileResponse
 
 
 app = FastAPI()
@@ -28,3 +29,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get("/habit-tracker")
+def habit_page():
+    return FileResponse("app/static/habit.html")
