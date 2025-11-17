@@ -71,5 +71,20 @@ class Feedback(Base):
 
     user = relationship("User", back_populates="feedback_entries")
 
+class HabitDay(Base):
+    __tablename__ = "habit_days"
+
+    id = Column(Integer, primary_key=True, index=True)
+    date = Column(String, unique=True, index=True)
+
+    Water = Column(Integer, default=0)
+    Walk = Column(Integer, default=0)
+    NoLunch = Column(Integer, default=0)
+    Chapter = Column(Integer, default=0)
+    Stand = Column(Integer, default=0)
+    Stretch = Column(Integer, default=0)
+    Bed = Column(Integer, default=0)
+
+
 
 
