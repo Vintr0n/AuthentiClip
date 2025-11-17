@@ -16,6 +16,8 @@ Base.metadata.create_all(bind=engine)
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(video_router, prefix="/video", tags=["video"])
 app.include_router(feedback_router, prefix="", tags=["feedback"])
+# NEW
+app.include_router(habits_router, prefix="/habits", tags=["habits"])
 
 
 # CORS middleware
