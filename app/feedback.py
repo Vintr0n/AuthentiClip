@@ -28,7 +28,7 @@ def export_feedback(
     db: Session = Depends(get_db),
     user = Depends(get_current_user)
 ):
-    if user.username != "noreply@clipcert.com":
+    if user.username != "":
         raise HTTPException(status_code=403, detail="Not authorized")
 
     entries = db.query(Feedback).join(User).all()
