@@ -214,7 +214,7 @@ async def reset_password(token: str = Form(...), password: str = Form(...), db: 
     if not user or user.reset_token_expires < datetime.utcnow():
         raise HTTPException(status_code=400, detail="Invalid or expired reset token")
     
-    if user.username == "clipcertpoc@gmail.com":
+    if user.username == "":
         raise HTTPException(status_code=403, detail="Password reset is disabled for this account.")
 
 
