@@ -151,11 +151,11 @@ This is a **proof-of-concept** with several important limitations:
 - Basic rate limiting needed for production
 - Email configuration required for verification
 
-## 🤝 Contributing
+## Contributing
 
 This is a proof-of-concept project. Contributions, issues, and feature requests are welcome!
 
-## 📄 License
+## License
 
 This project is provided as-is for demonstration purposes.
 
