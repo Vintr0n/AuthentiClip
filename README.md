@@ -4,7 +4,7 @@
 
 AuthentiClip is a proof-of-concept application that provides cryptographic proof of video authenticity using perceptual hashing and digital signatures. It enables content creators to sign their videos and allows anyone to verify if a video matches the original signed content.
 
-## 🎯 Core Concept
+## Core Concept
 
 In an era of deepfakes and manipulated media, AuthentiClip offers a solution for video provenance:
 
@@ -12,16 +12,16 @@ In an era of deepfakes and manipulated media, AuthentiClip offers a solution for
 2. **Cryptographic Proof**: Videos are signed with Ed25519 digital signatures, creating an immutable proof of authenticity
 3. **Verify Anywhere**: Anyone can verify if a video matches the original by comparing frame hashes against the signed bundle
 
-## ✨ Features
+## Features
 
 - **Frame-by-Frame Hashing**: Uses perceptual hashing (pHash) to create fingerprints of video content
-- **Ed25519 Signatures**: Military-grade cryptographic signatures ensure tamper-proof verification
+- **Ed25519 Signatures**: Cryptographic signatures ensure tamper-proof verification
 - **User Authentication**: Secure email verification and session management
 - **Upload History**: Track all videos you've signed
 - **URL Verification**: Verify videos directly from social media URLs (Twitter/X, etc.)
 - **Match Percentage**: Get precise similarity scores when comparing videos
 
-## 🏗️ Architecture
+## Architecture
 
 ### Backend (FastAPI + Python)
 - **FastAPI** for high-performance REST API
@@ -37,7 +37,7 @@ In an era of deepfakes and manipulated media, AuthentiClip offers a solution for
 - **Tailwind CSS** for styling
 - **Lottie** for animations
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Python 3.8+
@@ -81,7 +81,7 @@ MAIL_FROM = "your-email@example.com"
 MAIL_SERVER = "smtp.example.com"
 ```
 
-## 📖 How It Works
+## How It Works
 
 ### 1. Video Upload & Signing
 ```
@@ -104,7 +104,7 @@ Compare with signed bundles → Return match percentage
 - **Hash Algorithm**: pHash via imagehash library
 - **Signature Algorithm**: Ed25519
 
-## 🛣️ API Endpoints
+## API Endpoints
 
 ### Authentication
 - `POST /auth/signup` - Create new account
@@ -125,7 +125,7 @@ Compare with signed bundles → Return match percentage
 - `POST /feedback` - Submit feedback
 - `GET /feedback/export` - Export all feedback (admin only)
 
-## 🔐 Security Features
+## Security Features
 
 - **Email Verification**: Required before video operations
 - **Session Management**: 7-day session tokens with automatic cleanup
@@ -133,7 +133,7 @@ Compare with signed bundles → Return match percentage
 - **Private Key Storage**: Encrypted storage of user private keys
 - **Rate Limiting**: Prevents abuse (implement in production)
 
-## 📝 Use Cases
+## Use Cases
 
 - **Content Creators**: Prove ownership of original video content
 - **Journalists**: Verify authenticity of news footage
@@ -141,7 +141,7 @@ Compare with signed bundles → Return match percentage
 - **Legal Evidence**: Establish chain of custody for video evidence
 - **Brand Protection**: Verify official promotional videos
 
-## ⚠️ Limitations
+## Limitations
 
 This is a **proof-of-concept** with several important limitations:
 
@@ -150,17 +150,6 @@ This is a **proof-of-concept** with several important limitations:
 - No distributed storage (videos processed in-memory)
 - Basic rate limiting needed for production
 - Email configuration required for verification
-
-## 🔮 Future Enhancements
-
-- [ ] Support for additional video formats
-- [ ] Blockchain integration for public ledger
-- [ ] Mobile app for on-the-go verification
-- [ ] Browser extension for instant verification
-- [ ] Distributed hash storage (IPFS)
-- [ ] Advanced tampering detection
-- [ ] Multi-signature support
-- [ ] API rate limiting and quotas
 
 ## 🤝 Contributing
 
